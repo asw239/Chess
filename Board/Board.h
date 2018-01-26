@@ -1,8 +1,10 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-typedef struct BoardStruct * Board;
+typedef struct BoardStruct *Board;
 
-Board board_create();
+Board board_create(void);
+
+void board_destroy(Board b);
 
 #endif
