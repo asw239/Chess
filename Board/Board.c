@@ -2,10 +2,11 @@
 #include <stdlib.h>
 
 struct BoardStruct{
-
+	int **board_arr;
 };
 
-Board board_create(){
+Board board_create()
+{
 	Board b;
 	b = malloc(sizeof(*b));
 

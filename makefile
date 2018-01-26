@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Wfloat-equal -Wpointer-arith -Wcast-align
+CFLAGS = -std=c99 -Wall -Wextra -Wfloat-equal -Wpointer-arith -Wcast-align
 
 Board/Board.o : Board/Board.c
 	$(CC) $(CFLAGS) -c -o Board/Board.o Board/Board.c
