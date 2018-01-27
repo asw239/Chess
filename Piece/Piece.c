@@ -31,3 +31,13 @@ void piece_destroy(Piece p)
 	free(p->brd);
 	free(p);
 }
+
+void piece_set_type(Piece p, enum PieceType pt)
+{
+	*(p->pt) = pt;
+}
+
+enum PieceType piece_get_type(Piece p)
+{
+	return *(p->pt);
+}
