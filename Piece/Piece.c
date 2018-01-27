@@ -1,5 +1,4 @@
 #include "Piece.h"
-#include "../Board/Board.h"
 #include <stdlib.h>
 
 struct PieceStruct{
@@ -40,4 +39,38 @@ void piece_set_type(Piece p, enum PieceType pt)
 enum PieceType piece_get_type(Piece p)
 {
 	return *(p->pt);
+}
+
+void piece_set_board(Piece p, Board b)
+{
+	p->brd = b;
+}
+
+Board piece_get_board(Piece p)
+{
+	return b->brd;
+}
+
+bool piece_validate_move(Piece p)
+{
+	switch(*(p->pt)){
+	case king:
+
+		break;
+	case queen:
+
+		break;
+	case rook:
+
+		break;
+	case bishop:
+
+		break;
+	case knight:
+
+		break;
+	case pawn:
+
+		break;
+	}
 }

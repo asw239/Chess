@@ -1,9 +1,7 @@
 #include "Board.h"
-#include "../Piece/Piece.h"
 #include <stdlib.h>
-#include <stdint.h>
 
-#define BOARD_SIZE 8
+static const uint_fast8_t BOARD_SIZE = 8;
 
 struct BoardStruct{
 	Piece **board_arr;
@@ -16,12 +14,12 @@ Board board_create(void)
 	if(!b)
 		; // callback for memory allocation fail
 
-	b->board_arr = malloc(sizeof(Piece*) * 8);
+	b->board_arr = malloc(sizeof(Piece*) * BOARD_SIZE);
 	if(!b->board_arr)
 		; // callback for memory allocation fail
 
 	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
-		b->board_arr[i] = calloc(8, sizeof(Piece));
+		b->board_arr[i] = calloc(BOARD_SIZE, sizeof(Piece));
 		if(!b->board_arr[i])
 			; // callback for memory allocation fail
 	}
@@ -36,4 +34,14 @@ void board_destroy(Board b)
 
 	free(b->board_arr);
 	free(b);
+}
+
+Piece **board_get_arr(Board b)
+{
+	return b->board_arr;
+}
+
+uint_fast8_t board_get_size(void)
+{
+	return BOARD_SIZE;
 }

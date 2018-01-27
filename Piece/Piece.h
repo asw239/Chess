@@ -1,6 +1,8 @@
 #ifndef PIECE_H
 #define PIECE_H
 
+#include "../Board/Board.h"
+
 enum PieceType{
 	king,
 	queen,
@@ -19,5 +21,9 @@ void piece_destroy(Piece p);
 void piece_set_type(Piece p, enum PieceType pt);
 
 enum PieceType piece_get_type(Piece p);
+
+void piece_set_board(Piece p, Board b);
+
+Board piece_get_board(Piece p);
 
 #endif
