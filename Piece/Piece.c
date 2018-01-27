@@ -1,9 +1,10 @@
 #include "Piece.h"
+#include "../Board/Board.h"
 #include <stdlib.h>
-#include <stdint.h>
 
 struct PieceStruct{
 	enum PieceType *pt;
+	Board brd;
 };
 
 Piece piece_create(void)
@@ -17,11 +18,16 @@ Piece piece_create(void)
 	if(!p->pt)
 		; // callback for memory allocation fail
 
+	p->brd = malloc(sizeof(Board));
+	if(!p->brd)
+		; // callback for memory allocation fail
+
 	return p;
 }
 
 void piece_destroy(Piece p)
 {
 	free(p->pt);
+	free(p->brd);
 	free(p);
 }
