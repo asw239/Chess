@@ -1,12 +1,12 @@
 #include "../Piece.h"
 #include <stdio.h>
+#include <inttypes.h>
 
 int main(int argc, char **argv)
 {
 	Piece p = piece_create();
 
-	enum PieceType pt = bishop;
-	piece_set_type(p, pt);
+	piece_set_type(p, bishop);
 	printf("piece type: ");
 	switch(piece_get_type(p)){
 	case 0:
@@ -28,6 +28,16 @@ int main(int argc, char **argv)
 		printf("pawn\n");
 		break;
 	}
+
+	piece_set_color(p, 1);
+	printf("piece color: ");
+	piece_get_color(p) ? printf("white\n") : printf("black\n");
+
+	piece_set_pos(p, 6, 3);
+	printf("piece pos (");
+	printf("%" PRIuFAST8, piece_get_x(p)); 
+	printf(",%" PRIuFAST8, piece_get_y(p)); 
+	printf(")\n");
 
 	piece_destroy(p);
 	return 0;

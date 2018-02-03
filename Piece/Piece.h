@@ -1,7 +1,7 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-#include "../Board/Board.h"
+#include <stdint.h>
 
 enum PieceType{
 	king,
@@ -22,8 +22,14 @@ void piece_set_type(Piece p, enum PieceType pt);
 
 enum PieceType piece_get_type(Piece p);
 
-void piece_set_board(Piece p, Board b);
+void piece_set_pos(Piece p, uint_fast8_t x, uint_fast8_t y);
 
-Board piece_get_board(Piece p);
+uint_fast8_t piece_get_x(Piece p);
+
+uint_fast8_t piece_get_y(Piece p);
+
+void piece_set_color(Piece p, uint_fast8_t c);
+
+uint_fast8_t piece_get_color(Piece p);
 
 #endif
