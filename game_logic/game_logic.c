@@ -1,6 +1,6 @@
 #include "game_logic.h"
 
-Board generate_start_board()
+Board generate_start_board(void)
 {
 	Board b = board_create();
 	board_set_turn(b, 1);
@@ -93,7 +93,7 @@ Board generate_start_board()
 	piece_set_pos(tmp, 7, 4);
 	board_arr[7][4] = tmp;
 
-	for(int i = 1; i < board_get_size(); j+=5){
+	for(int i = 1; i < board_get_size(); i+=5){
 		for(int j = 0; j < board_get_size(); j++){
 			tmp = piece_create();
 			piece_set_type(tmp, pawn);

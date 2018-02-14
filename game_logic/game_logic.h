@@ -3,6 +3,6 @@
 
 #include "../Board/Board.h"
 
-Board generate_start_board();
+Board generate_start_board(void);
 
 #endif
