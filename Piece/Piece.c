@@ -1,4 +1,5 @@
 #include "Piece.h"
+#include "../errors/def_hndl.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -12,8 +13,6 @@ struct PieceStruct{
 	uint_fast8_t *y;
 	enum PieceColor *color;
 };
-
-static void def_hndl(enum ErrorCode err, const char *msg);
 
 static void (*err_fnc_ptr)(enum ErrorCode err, const char *msg) = def_hndl;
 
@@ -51,7 +50,7 @@ void piece_destroy(Piece *p)
 {
 	#define FUNC_NAME "void piece_destroy(Piece *p)"
 
-	if(!*p)
+	if(!p)
 		err_fnc_ptr(NULL_PARAM,
 			"In file " FILE_NAME ", " FUNC_NAME);
 
@@ -172,39 +171,4 @@ bool set_err_hndl(void (*err_hndl)(enum ErrorCode err, const char *msg))
 
 	err_fnc_ptr = err_hndl;
 	return true;
-}
-
-static void def_hndl(enum ErrorCode err, const char *msg)
-{
-	fprintf(stderr, "\n%s\n", msg);
-
-	switch(err){
-	case MEM_FAIL:
-		fprintf(stderr, "ERROR #%d (MEM_FAIL)\n", err);
-		fprintf(stderr,
-			"malloc returned NULL, program out of usable memory\n");
-		exit(err);
-		break;
-	case NULL_PARAM:
-		fprintf(stderr, "ERROR #%d (NULL_PARAM)\n", err);
-		fprintf(stderr,
-			"unexpected NULL value as a parameter\n");
-		exit(err);
-		break;
-	case INVALID_ENUM_PARAM:
-		fprintf(stderr, "ERROR #%d (INVALID_ENUM_PARAM)\n", err);
-		fprintf(stderr,
-			"enum parameter is not part of valid identifiers\n");
-		exit(err);
-		break;
-	case INVALID_INT_PARAM:
-		fprintf(stderr, "ERROR #%d (INVALID_INT_PARAM)\n", err);
-		fprintf(stderr,
-			"int parameter is not part of a valid range\n");
-		exit(err);
-		break;
-	default:
-		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
-		exit(err);
-	}
 }

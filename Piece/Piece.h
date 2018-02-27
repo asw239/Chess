@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "../errors/ErrorCode.h"
 
 enum PieceType{
 	king,
@@ -16,13 +17,6 @@ enum PieceType{
 enum PieceColor{
 	BLACK,
 	WHITE
-};
-
-enum ErrorCode{
-	MEM_FAIL,
-	NULL_PARAM,
-	INVALID_ENUM_PARAM,
-	INVALID_INT_PARAM
 };
 
 typedef struct PieceStruct *Piece;
