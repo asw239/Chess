@@ -2,6 +2,8 @@
 #define PIECE_H
 
 #include <stdint.h>
+#include <stdbool.h>
+#include "../errors/ErrorCode.h"
 
 enum PieceType{
 	king,
@@ -12,11 +14,16 @@ enum PieceType{
 	pawn
 };
 
+enum PieceColor{
+	BLACK,
+	WHITE
+};
+
 typedef struct PieceStruct *Piece;
 
 Piece piece_create(void);
 
-void piece_destroy(Piece p);
+void piece_destroy(Piece *p);
 
 void piece_set_type(Piece p, enum PieceType pt);
 
@@ -28,8 +35,10 @@ uint_fast8_t piece_get_x(Piece p);
 
 uint_fast8_t piece_get_y(Piece p);
 
-void piece_set_color(Piece p, uint_fast8_t c);
+void piece_set_color(Piece p, enum PieceColor c);
 
-uint_fast8_t piece_get_color(Piece p);
+enum PieceColor piece_get_color(Piece p);
+
+bool set_err_hndl(void (*err_hndl)(enum ErrorCode err, const char *msg));
 
 #endif

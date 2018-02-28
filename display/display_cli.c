@@ -119,33 +119,33 @@ static void print_piece(Piece p)
 	if(p == NULL)
 		printf(" ");
 
-	else if(piece_get_type(p) == king && piece_get_color(p) == 1)
+	else if(piece_get_type(p) == king && piece_get_color(p) == WHITE)
 		printf("%lc", u_w_king);
-	else if(piece_get_type(p) == king && piece_get_color(p) == 0)
+	else if(piece_get_type(p) == king && piece_get_color(p) == BLACK)
 		printf("%lc", u_b_king);
 
-	else if(piece_get_type(p) == queen && piece_get_color(p) == 1)
+	else if(piece_get_type(p) == queen && piece_get_color(p) == WHITE)
 		printf("%lc", u_w_queen);
-	else if(piece_get_type(p) == queen && piece_get_color(p) == 0)
+	else if(piece_get_type(p) == queen && piece_get_color(p) == BLACK)
 		printf("%lc", u_b_queen);
 
-	else if(piece_get_type(p) == rook && piece_get_color(p) == 1)
+	else if(piece_get_type(p) == rook && piece_get_color(p) == WHITE)
 		printf("%lc", u_w_rook);
-	else if(piece_get_type(p) == rook && piece_get_color(p) == 0)
+	else if(piece_get_type(p) == rook && piece_get_color(p) == BLACK)
 		printf("%lc", u_b_rook);
 
-	else if(piece_get_type(p) == bishop && piece_get_color(p) == 1)
+	else if(piece_get_type(p) == bishop && piece_get_color(p) == WHITE)
 		printf("%lc", u_w_bishop);
-	else if(piece_get_type(p) == bishop && piece_get_color(p) == 0)
+	else if(piece_get_type(p) == bishop && piece_get_color(p) == BLACK)
 		printf("%lc", u_b_bishop);
 
-	else if(piece_get_type(p) == knight && piece_get_color(p) == 1)
+	else if(piece_get_type(p) == knight && piece_get_color(p) == WHITE)
 		printf("%lc", u_w_knight);
-	else if(piece_get_type(p) == knight && piece_get_color(p) == 0)
+	else if(piece_get_type(p) == knight && piece_get_color(p) == BLACK)
 		printf("%lc", u_b_knight);
 
-	else if(piece_get_type(p) == pawn && piece_get_color(p) == 1)
+	else if(piece_get_type(p) == pawn && piece_get_color(p) == WHITE)
 		printf("%lc", u_w_pawn);
-	else if(piece_get_type(p) == pawn && piece_get_color(p) == 0)
+	else if(piece_get_type(p) == pawn && piece_get_color(p) == BLACK)
 		printf("%lc", u_b_pawn);
 }
