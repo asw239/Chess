@@ -12,7 +12,7 @@ Board board_create(void);
 
 void board_destroy(Board *b);
 
-Piece **board_get_arr(Board b);
+Piece **board_get_arr(const Board b);
 
 uint_fast8_t board_get_size(void);
 
@@ -20,12 +20,12 @@ void board_set_turn(Board b, enum PieceColor c);
 
 void board_flip_turn(Board b);
 
-enum PieceColor board_get_turn(Board b);
+enum PieceColor board_get_turn(const Board b);
 
 Piece board_remove_piece(Board b, Piece *p, bool destroy);
 
 void board_init_capture_list(Board b);
 
-Piece *board_get_capture_list(Board b, enum PieceColor c);
+Piece *board_get_capture_list(const Board b, enum PieceColor c);
 
 #endif

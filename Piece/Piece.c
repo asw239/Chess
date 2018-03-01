@@ -82,7 +82,7 @@ void piece_set_type(Piece p, enum PieceType pt)
 	*(p->pt) = pt;
 }
 
-enum PieceType piece_get_type(Piece p)
+enum PieceType piece_get_type(const Piece p)
 {
 	#define FUNC_NAME "enum PieceType piece_get_type(Piece p)"
 
@@ -112,7 +112,7 @@ void piece_set_pos(Piece p, uint_fast8_t x, uint_fast8_t y)
 	*(p->y) = y;
 }
 
-uint_fast8_t piece_get_x(Piece p)
+uint_fast8_t piece_get_x(const Piece p)
 {
 	#define FUNC_NAME "uint_fast8_t piece_get_x(Piece p)"
 
@@ -124,7 +124,7 @@ uint_fast8_t piece_get_x(Piece p)
 	return *(p->x);
 }
 
-uint_fast8_t piece_get_y(Piece p)
+uint_fast8_t piece_get_y(const Piece p)
 {
 	#define FUNC_NAME "uint_fast8_t piece_get_y(Piece p)"
 
@@ -152,7 +152,7 @@ void piece_set_color(Piece p, enum PieceColor c)
 	*(p->color) = c;
 }
 
-enum PieceColor piece_get_color(Piece p)
+enum PieceColor piece_get_color(const Piece p)
 {
 	#define FUNC_NAME "enum PieceColor piece_get_color(Piece p)"
 
