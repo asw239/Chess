@@ -11,6 +11,8 @@ static void (*err_fnc_ptr)(enum ErrorCode err, const char *msg) = def_hndl;
 struct BoardStruct{
 	Piece **board_arr;
 	enum PieceColor *turn;
+	Piece *w_capture_list;
+	Piece *b_capture_list;
 };
 
 Board board_create(void)
@@ -39,6 +41,9 @@ Board board_create(void)
 
 	#undef FUNC_NAME
 
+	b->b_capture_list = NULL;
+	b->w_capture_list = NULL;
+
 	return b;
 }
 
@@ -56,10 +61,23 @@ void board_destroy(Board *b)
 			if((*b)->board_arr[i][j])
 				piece_destroy(&(*b)->board_arr[i][j]);
 
+	if((*b)->w_capture_list){
+		for(uint_fast8_t i = 0; i < PIECE_COUNT; i++)
+			if((*b)->w_capture_list[i])
+				piece_destroy(&((*b)->w_capture_list[i])); 
+		free((*b)->w_capture_list);
+	}
+	if((*b)->b_capture_list){
+		for(uint_fast8_t i = 0; i < PIECE_COUNT; i++)
+			if((*b)->b_capture_list[i])
+				piece_destroy(&((*b)->b_capture_list[i])); 
+		free((*b)->b_capture_list);
+	}
+
 	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++)
 		free((*b)->board_arr[i]);
-
 	free((*b)->board_arr);
+
 	free((*b)->turn);
 	free(*b);
 
@@ -145,11 +163,65 @@ Piece board_remove_piece(Board b, Piece *p, bool destroy)
 	b->board_arr[piece_get_x(*p)][piece_get_y(*p)] = NULL;
 
 	if(destroy){
+		if(b->b_capture_list || b->w_capture_list)
+			err_fnc_ptr(CONFLICTING_PARAM, "In file " FILE_NAME
+				", " FUNC_NAME);
 		piece_destroy(p);
 		return NULL;
+
+	//sorry for this
 	}else{
+		if(b->b_capture_list || b->w_capture_list){
+			if(piece_get_color(*p) == WHITE){
+				for(uint_fast8_t i = 0; i < PIECE_COUNT; i++)
+					if(!b->w_capture_list[i]){
+						b->w_capture_list[i] = *p;
+						break;
+					}
+			}else if(piece_get_color(*p) == BLACK){
+				for(uint_fast8_t i = 0; i < PIECE_COUNT; i++)
+					if(!b->b_capture_list[i]){
+						b->b_capture_list[i] = *p;
+						break;
+					}
+			}
+		}
 		return *p;
 	}
 
 	#undef FUNC_NAME
+}
+
+void board_init_capture_list(Board b)
+{
+	#define FUNC_NAME "void board_init_capture_list(Board b)"
+
+	if(!b)
+		err_fnc_ptr(NULL_PARAM, "In file " FILE_NAME ", " FUNC_NAME);
+
+	b->b_capture_list = calloc(PIECE_COUNT, sizeof(Piece));
+	if(!b->b_capture_list)
+		err_fnc_ptr(MEM_FAIL, "In file " FILE_NAME ", " FUNC_NAME);
+	
+	b->w_capture_list = calloc(PIECE_COUNT, sizeof(Piece));
+	if(!b->w_capture_list)
+		err_fnc_ptr(MEM_FAIL, "In file " FILE_NAME ", " FUNC_NAME);
+
+	#undef FUNC_NAME
+}
+
+Piece *board_get_capture_list(Board b, enum PieceColor c)
+{
+	#define FUNC_NAME "Piece *board_get_capture_list(Board b)"
+
+	if(!b || !b->b_capture_list || !b->w_capture_list)
+		err_fnc_ptr(NULL_PARAM, "In file " FILE_NAME ", " FUNC_NAME);
+
+	if(c != WHITE && c != BLACK)
+		err_fnc_ptr(INVALID_ENUM_PARAM, "In file " FILE_NAME ", "
+			FUNC_NAME);
+
+	#undef FUNC_NAME
+
+	return c == WHITE ? b->w_capture_list : b->b_capture_list;
 }

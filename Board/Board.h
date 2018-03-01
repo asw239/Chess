@@ -24,4 +24,8 @@ enum PieceColor board_get_turn(Board b);
 
 Piece board_remove_piece(Board b, Piece *p, bool destroy);
 
+void board_init_capture_list(Board b);
+
+Piece *board_get_capture_list(Board b, enum PieceColor c);
+
 #endif
