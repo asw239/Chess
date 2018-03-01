@@ -5,13 +5,15 @@
 #include <stdbool.h>
 #include "../errors/ErrorCode.h"
 
+#define PIECE_COUNT 16
+
 enum PieceType{
-	king,
-	queen,
-	rook,
-	bishop,
-	knight,
-	pawn
+	king = 1,
+	queen = 2,
+	rook = 3,
+	bishop = 4,
+	knight = 5,
+	pawn = 6
 };
 
 enum PieceColor{

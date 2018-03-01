@@ -35,6 +35,11 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr,
 			"Piece parameter is not associated with that Board\n");
 		exit(err);
+	case CONFLICTING_PARAM:
+		fprintf(stderr, "ERROR #%d (CONFLICTING PARAM)\n", err);
+		fprintf(stderr,
+			"destroy must = false after board_init_capture_list\n");
+		exit(err);
 	default:
 		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
 		exit(err);
