@@ -10,8 +10,8 @@ static void padding_vert(void);
 static void padding_hori(void);
 static void div_hori(void);
 static void letters(void);
-static void div_vert(uint_fast8_t row, Board b);
-static void print_piece(Piece p);
+static void div_vert(uint_fast8_t row, const Board b);
+static void print_piece(const Piece p);
 
 enum UPieceType{
 	u_w_king	= L'\u2654',
@@ -35,7 +35,7 @@ void init_display(void)
 	//sets the locale to the locale of the execution environment
 }
 
-void print_board(Board b)
+void print_board(const Board b)
 {
 	padding_vert();
 	letters();
@@ -94,7 +94,7 @@ static void div_hori(void)
 	printf("+");
 }
 
-static void div_vert(uint_fast8_t row, Board b)
+static void div_vert(uint_fast8_t row, const Board b)
 {
 	for(uint_fast8_t i = 0; i < OFFSET; i++)
 		printf(" ");
@@ -114,7 +114,7 @@ static void div_vert(uint_fast8_t row, Board b)
 	printf(" %d", row);
 }
 
-static void print_piece(Piece p)
+static void print_piece(const Piece p)
 {
 	if(p == NULL)
 		printf(" ");

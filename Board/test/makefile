@@ -20,4 +20,4 @@ main.o :  main.c
 	$(CC) $(CFLAGS) -c -o ../../errors/def_hndl.o ../../errors/def_hndl.c
 
 clean :
-	rm main main.o ../../errors/def_hndl.o ../../Piece/Piece.o ../Board.o
+	rm main main.o ../../display/display_cli.o ../../errors/def_hndl.o ../../Piece/Piece.o ../Board.o

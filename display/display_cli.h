@@ -5,6 +5,6 @@
 
 void init_display(void);
 
-void print_board(Board b);
+void print_board(const Board b);
 
 #endif

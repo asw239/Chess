@@ -84,7 +84,7 @@ void board_destroy(Board *b)
 	*b = NULL;
 }
 
-Piece **board_get_arr(Board b)
+Piece **board_get_arr(const Board b)
 {
 	#define FUNC_NAME "Piece **board_get_arr(Board b)"
 
@@ -130,7 +130,7 @@ void board_flip_turn(Board b)
 	*(b->turn) == WHITE ? (*(b->turn) = BLACK) : (*(b->turn) = WHITE);
 }
 
-enum PieceColor board_get_turn(Board b)
+enum PieceColor board_get_turn(const Board b)
 {
 	#define FUNC_NAME "uint_fast8_t board_get_turn(Board b)"
 
@@ -210,7 +210,7 @@ void board_init_capture_list(Board b)
 	#undef FUNC_NAME
 }
 
-Piece *board_get_capture_list(Board b, enum PieceColor c)
+Piece *board_get_capture_list(const Board b, enum PieceColor c)
 {
 	#define FUNC_NAME "Piece *board_get_capture_list(Board b)"
 
