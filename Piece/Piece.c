@@ -164,7 +164,7 @@ enum PieceColor piece_get_color(const Piece p)
 	return *(p->color);
 }
 
-bool set_err_hndl(void (*err_hndl)(enum ErrorCode err, const char *msg))
+bool piece_set_err_hndl(void (*err_hndl)(enum ErrorCode err, const char *msg))
 {
 	if(err_hndl == NULL)
 		return false;

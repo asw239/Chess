@@ -29,6 +29,22 @@ enum UPieceType{
 	u_b_pawn	= L'\u265F'
 };
 
+enum APieceType{
+	a_w_king	= 'K',
+	a_w_queen 	= 'Q',
+	a_w_rook 	= 'R',
+	a_w_bishop 	= 'B',
+	a_w_knight 	= 'N',
+	a_w_pawn 	= 'P',
+
+	a_b_king 	= 'k',
+	a_b_queen	= 'q',
+	a_b_rook	= 'r',
+	a_b_bishop	= 'b',
+	a_b_knight	= 'n',
+	a_b_pawn	= 'p'
+};
+
 void init_display(void)
 {
 	setlocale(LC_ALL, "");
@@ -120,32 +136,32 @@ static void print_piece(const Piece p)
 		printf(" ");
 
 	else if(piece_get_type(p) == king && piece_get_color(p) == WHITE)
-		printf("%lc", u_w_king);
+		printf("%lc", a_w_king);
 	else if(piece_get_type(p) == king && piece_get_color(p) == BLACK)
-		printf("%lc", u_b_king);
+		printf("%lc", a_b_king);
 
 	else if(piece_get_type(p) == queen && piece_get_color(p) == WHITE)
-		printf("%lc", u_w_queen);
+		printf("%lc", a_w_queen);
 	else if(piece_get_type(p) == queen && piece_get_color(p) == BLACK)
-		printf("%lc", u_b_queen);
+		printf("%lc", a_b_queen);
 
 	else if(piece_get_type(p) == rook && piece_get_color(p) == WHITE)
-		printf("%lc", u_w_rook);
+		printf("%lc", a_w_rook);
 	else if(piece_get_type(p) == rook && piece_get_color(p) == BLACK)
-		printf("%lc", u_b_rook);
+		printf("%lc", a_b_rook);
 
 	else if(piece_get_type(p) == bishop && piece_get_color(p) == WHITE)
-		printf("%lc", u_w_bishop);
+		printf("%lc", a_w_bishop);
 	else if(piece_get_type(p) == bishop && piece_get_color(p) == BLACK)
-		printf("%lc", u_b_bishop);
+		printf("%lc", a_b_bishop);
 
 	else if(piece_get_type(p) == knight && piece_get_color(p) == WHITE)
-		printf("%lc", u_w_knight);
+		printf("%lc", a_w_knight);
 	else if(piece_get_type(p) == knight && piece_get_color(p) == BLACK)
-		printf("%lc", u_b_knight);
+		printf("%lc", a_b_knight);
 
 	else if(piece_get_type(p) == pawn && piece_get_color(p) == WHITE)
-		printf("%lc", u_w_pawn);
+		printf("%lc", a_w_pawn);
 	else if(piece_get_type(p) == pawn && piece_get_color(p) == BLACK)
-		printf("%lc", u_b_pawn);
+		printf("%lc", a_b_pawn);
 }

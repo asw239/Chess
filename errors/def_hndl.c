@@ -19,6 +19,7 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr, "ERROR #%d (NULL_PARAM)\n", err);
 		fprintf(stderr,
 			"unexpected NULL value as a parameter\n");
+		break;
 	case INVALID_ENUM_PARAM:
 		fprintf(stderr, "ERROR #%d (INVALID_ENUM_PARAM)\n", err);
 		fprintf(stderr,
@@ -38,6 +39,26 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr, "ERROR #%d (CONFLICTING PARAM)\n", err);
 		fprintf(stderr,
 			"destroy must = false after board_init_capture_list\n");
+		break;
+	case PIECE_MOVE_SAME_POS:
+		fprintf(stderr, "ERROR #%d (PIECE_MOVE_SAME_POS)\n", err);
+		fprintf(stderr,
+			"attempting to move a Piece to the same position\n");
+		break;
+	case PIECE_MOVE_OVERLAPS_ALLY:
+		fprintf(stderr, "ERROR #%d (PIECE_MOVE_OVERLAPS_ALLY)\n", err);
+		fprintf(stderr,
+			"attempting to move a Piece on top of ally Piece\n");
+		break;
+	case PIECE_MOVE_NOT_IN_RANGE:
+		fprintf(stderr, "ERROR #%d (PIECE_MOVE_NOT_IN_RANGE)\n", err);
+		fprintf(stderr,
+			"attempting to move a Piece outside of valid range\n");
+		break;
+	case PIECE_MOVE_COLLISION:
+		fprintf(stderr, "ERROR #%d (PIECE_MOVE_COLLISION)\n", err);
+		fprintf(stderr,
+			"collision occured while moving piece\n");
 		break;
 	default:
 		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
