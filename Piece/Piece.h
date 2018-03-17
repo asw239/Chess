@@ -41,6 +41,6 @@ void piece_set_color(Piece p, enum PieceColor c);
 
 enum PieceColor piece_get_color(const Piece p);
 
-bool set_err_hndl(void (*err_hndl)(enum ErrorCode err, const char *msg));
+bool piece_set_err_hndl(void (*err_hndl)(enum ErrorCode err, const char *msg));
 
 #endif

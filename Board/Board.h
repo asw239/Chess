@@ -28,4 +28,7 @@ void board_init_capture_list(Board b);
 
 Piece *board_get_capture_list(const Board b, enum PieceColor c);
 
+void board_set_err_hndl(enum ErrorCode error_type,
+	void (*err_hndl)(enum ErrorCode err, const char *msg));
+
 #endif
