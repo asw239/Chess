@@ -12,12 +12,12 @@ Board board_create(void);
 
 void board_destroy(Board *b);
 
-void board_link_piece(Board b, Piece p, uint_fast8_t x, uint_fast8_t y);
+void board_link_piece(Board b, Piece p, uint_fast8_t r, uint_fast8_t c);
 
-void board_move_piece(Board b, uint_fast8_t x_old, uint_fast8_t y_old,
-	uint_fast8_t x_new, uint_fast8_t y_new);
+void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+	uint_fast8_t r_new, uint_fast8_t c_new);
 
-Piece board_get_piece(Board b, uint_fast8_t x, uint_fast8_t y);
+Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c);
 
 uint_fast8_t board_get_size(void);
 
@@ -27,7 +27,7 @@ void board_flip_turn(Board b);
 
 enum PieceColor board_get_turn(const Board b);
 
-Piece board_remove_piece(Board b, uint_fast8_t x, uint_fast8_t y, bool destroy);
+Piece board_remove_piece(Board b, uint_fast8_t r, uint_fast8_t c, bool destroy);
 
 void board_init_capture_list(Board b);
 

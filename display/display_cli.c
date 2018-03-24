@@ -1,8 +1,10 @@
 #include "display_cli.h"
+#include "../errors/def_hndl.h"
 #include <wchar.h>
 #include <locale.h>
 #include <stdio.h>
 
+#define FILE_NAME "display_cli.c"
 #define QUADRANT_SIZE 3
 #define OFFSET 9		// multiples of 3
 
@@ -12,6 +14,9 @@ static void div_hori(void);
 static void letters(void);
 static void div_vert(uint_fast8_t row, const Board b);
 static void print_piece(const Piece p);
+
+static void (*err_fnc_arr[ERROR_CODE_COUNT])(enum ErrorCode err,
+	const char *msg) = {[GLOBAL_ERROR] = def_hndl};
 
 enum UPieceType{
 	u_w_king	= L'\u2654',
@@ -53,6 +58,19 @@ void init_display(void)
 
 void print_board(const Board b)
 {
+	#define FUNC_NAME "void print_board(const Board b)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, " In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
 	padding_vert();
 	letters();
 	printf("\n");
@@ -135,33 +153,52 @@ static void print_piece(const Piece p)
 	if(p == NULL)
 		printf(" ");
 
-	else if(piece_get_type(p) == king && piece_get_color(p) == WHITE)
+	else if(piece_get_type(p) == KING && piece_get_color(p) == WHITE)
 		printf("%lc", a_w_king);
-	else if(piece_get_type(p) == king && piece_get_color(p) == BLACK)
+	else if(piece_get_type(p) == KING && piece_get_color(p) == BLACK)
 		printf("%lc", a_b_king);
 
-	else if(piece_get_type(p) == queen && piece_get_color(p) == WHITE)
+	else if(piece_get_type(p) == QUEEN && piece_get_color(p) == WHITE)
 		printf("%lc", a_w_queen);
-	else if(piece_get_type(p) == queen && piece_get_color(p) == BLACK)
+	else if(piece_get_type(p) == QUEEN && piece_get_color(p) == BLACK)
 		printf("%lc", a_b_queen);
 
-	else if(piece_get_type(p) == rook && piece_get_color(p) == WHITE)
+	else if(piece_get_type(p) == ROOK && piece_get_color(p) == WHITE)
 		printf("%lc", a_w_rook);
-	else if(piece_get_type(p) == rook && piece_get_color(p) == BLACK)
+	else if(piece_get_type(p) == ROOK && piece_get_color(p) == BLACK)
 		printf("%lc", a_b_rook);
 
-	else if(piece_get_type(p) == bishop && piece_get_color(p) == WHITE)
+	else if(piece_get_type(p) == BISHOP && piece_get_color(p) == WHITE)
 		printf("%lc", a_w_bishop);
-	else if(piece_get_type(p) == bishop && piece_get_color(p) == BLACK)
+	else if(piece_get_type(p) == BISHOP && piece_get_color(p) == BLACK)
 		printf("%lc", a_b_bishop);
 
-	else if(piece_get_type(p) == knight && piece_get_color(p) == WHITE)
+	else if(piece_get_type(p) == KNIGHT && piece_get_color(p) == WHITE)
 		printf("%lc", a_w_knight);
-	else if(piece_get_type(p) == knight && piece_get_color(p) == BLACK)
+	else if(piece_get_type(p) == KNIGHT && piece_get_color(p) == BLACK)
 		printf("%lc", a_b_knight);
 
-	else if(piece_get_type(p) == pawn && piece_get_color(p) == WHITE)
+	else if(piece_get_type(p) == PAWN && piece_get_color(p) == WHITE)
 		printf("%lc", a_w_pawn);
-	else if(piece_get_type(p) == pawn && piece_get_color(p) == BLACK)
+	else if(piece_get_type(p) == PAWN && piece_get_color(p) == BLACK)
 		printf("%lc", a_b_pawn);
+}
+
+void display_set_err_hndl(enum ErrorCode error_type,
+	void (*err_hndl)(enum ErrorCode err, const char *msg))
+{
+	#define FUNC_NAME "void display_set_err_hndl(enum ErrorCode error_type"\
+		", void (*err_hndl)(enum ErrorCode err, const char *msg))"
+
+	if(!(
+		error_type != GLOBAL_ERROR
+		||
+		error_type != NULL_PARAM
+	))
+		err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+			FILE_NAME ", " FUNC_NAME);
+
+	#undef FUNC_NAME
+
+	err_fnc_arr[error_type] = err_hndl;
 }
