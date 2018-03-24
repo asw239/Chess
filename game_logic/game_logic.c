@@ -4,19 +4,20 @@
 
 #define FILE_NAME "game_logic.c"
 
-static void check_move_same_pos(const Piece p, uint_fast8_t x, uint_fast8_t y);
-static void check_ally_overlap(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y);
-static void check_move_king(const Piece p, uint_fast8_t x, uint_fast8_t y);
-static void check_move_rook(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y, bool checkQueen, bool *in_range);
-static void check_move_bishop(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y, bool checkQueen, bool *in_range);
-static void check_move_queen(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y);
-static void check_move_knight(const Piece p, uint_fast8_t x, uint_fast8_t y);
-static void check_move_pawn(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y);
+static void check_move_king(uint_fast8_t x_old, uint_fast8_t y_old,
+	uint_fast8_t x_new, uint_fast8_t y_new);
+static void check_move_rook(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new,
+	bool checkQueen, bool *in_range);
+static void check_move_bishop(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new,
+	bool checkQueen, bool *in_range);
+static void check_move_queen(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new);
+static void check_move_knight(uint_fast8_t x_old, uint_fast8_t y_old,
+	uint_fast8_t x_new, uint_fast8_t y_new);
+static void check_move_pawn(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new);
 
 static void (*err_fnc_arr[ERROR_CODE_COUNT])(enum ErrorCode err,
 	const char *msg) = {[GLOBAL_ERROR] = def_hndl};
@@ -26,93 +27,76 @@ Board generate_start_board(void)
 	Board b = board_create();
 	board_set_turn(b, WHITE);
 
-	Piece **board_arr = board_get_arr(b);
 	Piece tmp; 
 
 	tmp = piece_create();
 	piece_set_type(tmp, rook);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 0);
-	board_arr[0][0] = tmp;
+	board_link_piece(b, tmp, 0, 0);
 	tmp = piece_create();
 	piece_set_type(tmp, rook);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 7);
-	board_arr[0][7] = tmp;
+	board_link_piece(b, tmp, 0, 7);
 	tmp = piece_create();
 	piece_set_type(tmp, rook);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 0);
-	board_arr[7][0] = tmp;
+	board_link_piece(b, tmp, 7, 0);
 	tmp = piece_create();
 	piece_set_type(tmp, rook);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 7);
-	board_arr[7][7] = tmp;
+	board_link_piece(b, tmp, 7, 7);
 
 	tmp = piece_create();
 	piece_set_type(tmp, knight);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 1);
-	board_arr[0][1] = tmp;
+	board_link_piece(b, tmp, 0, 1);
 	tmp = piece_create();
 	piece_set_type(tmp, knight);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 6);
-	board_arr[0][6] = tmp;
+	board_link_piece(b, tmp, 0, 6);
 	tmp = piece_create();
 	piece_set_type(tmp, knight);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 1);
-	board_arr[7][1] = tmp;
+	board_link_piece(b, tmp, 7, 1);
 	tmp = piece_create();
 	piece_set_type(tmp, knight);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 6);
-	board_arr[7][6] = tmp;
+	board_link_piece(b, tmp, 7, 6);
 
 	tmp = piece_create();
 	piece_set_type(tmp, bishop);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 2);
-	board_arr[0][2] = tmp;
+	board_link_piece(b, tmp, 0, 2);
 	tmp = piece_create();
 	piece_set_type(tmp, bishop);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 5);
-	board_arr[0][5] = tmp;
+	board_link_piece(b, tmp, 0, 5);
 	tmp = piece_create();
 	piece_set_type(tmp, bishop);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 2);
-	board_arr[7][2] = tmp;
+	board_link_piece(b, tmp, 7, 2);
 	tmp = piece_create();
 	piece_set_type(tmp, bishop);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 5);
-	board_arr[7][5] = tmp;
+	board_link_piece(b, tmp, 7, 5);
 
 	tmp = piece_create();
 	piece_set_type(tmp, queen);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 3);
-	board_arr[0][3] = tmp;
+	board_link_piece(b, tmp, 0, 4);
 	tmp = piece_create();
 	piece_set_type(tmp, queen);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 3);
-	board_arr[7][3] = tmp;
+	board_link_piece(b, tmp, 7, 4);
 
 	tmp = piece_create();
 	piece_set_type(tmp, king);
 	piece_set_color(tmp, BLACK);
-	piece_set_pos(tmp, 0, 4);
-	board_arr[0][4] = tmp;
+	board_link_piece(b, tmp, 0, 3);
 	tmp = piece_create();
 	piece_set_type(tmp, king);
 	piece_set_color(tmp, WHITE);
-	piece_set_pos(tmp, 7, 4);
-	board_arr[7][4] = tmp;
+	board_link_piece(b, tmp, 7, 3);
 
 	for(int i = 1; i < board_get_size(); i+=5){
 		for(int j = 0; j < board_get_size(); j++){
@@ -121,105 +105,58 @@ Board generate_start_board(void)
 			i == 1
 				?piece_set_color(tmp, BLACK)
 				:piece_set_color(tmp, WHITE);
-			piece_set_pos(tmp, i, j);
-			board_arr[i][j] = tmp;
+			board_link_piece(b, tmp, i, j);
 		}
 	}
 
 	return b;
 }
 
-void validate_move(const Board b, const Piece p, uint_fast8_t x, uint_fast8_t y)
+void validate_move(const Board b, uint_fast8_t x_old, uint_fast8_t y_old,
+	uint_fast8_t x_new, uint_fast8_t y_new)
 {
-	#define FUNC_NAME "bool validate_move(const Board b, const Piece p, "\
-		"uint_fast8_t x, uint_fast8_t y)"
+	#define FUNC_NAME "void validate_move(const Board b, "\
+		"uint_fast8_t x_old, uint_fast8_t y_old, uint_fast8_t x_new, "\
+		"uint_fast8 y_new)"
 
-	if(!b || !p){
+	if(!b){
 		if(!err_fnc_arr[NULL_PARAM])
 			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
 				FILE_NAME ", " FUNC_NAME);
 		else
 			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
 				FILE_NAME ", " FUNC_NAME);
-	}
 
-	if(x >= board_get_size() || y >= board_get_size()){
+	}else if(x_old >= board_get_size() || y_old >= board_get_size() ||
+		x_new >= board_get_size() || y_new >= board_get_size()){
 		if(!err_fnc_arr[INVALID_INT_PARAM])
 			err_fnc_arr[GLOBAL_ERROR](INVALID_INT_PARAM,
 				"In file " FILE_NAME ", " FUNC_NAME);
 		else
 			err_fnc_arr[INVALID_INT_PARAM](INVALID_INT_PARAM,
 				"In file " FILE_NAME ", " FUNC_NAME);
-	}
 
-	bool found = false;
-	for(uint_fast8_t i = 0; i < board_get_size(); i++)
-		for(uint_fast8_t j = 0; j < board_get_size(); j++)
-			if(board_get_arr(b)[i][j] == p)
-				found = true;
-	if(!found){
-		if(!err_fnc_arr[PIECE_NOT_IN_BOARD])
-			err_fnc_arr[GLOBAL_ERROR](PIECE_NOT_IN_BOARD,
-				"In file " FILE_NAME ", " FUNC_NAME);
-		else
-			err_fnc_arr[PIECE_NOT_IN_BOARD](PIECE_NOT_IN_BOARD,
-				"In file " FILE_NAME ", " FUNC_NAME);
-	}
-
-	#undef FUNC_NAME
-
-	check_move_same_pos(p, x, y);
-	check_ally_overlap(b, p, x, y);
-
-	switch(piece_get_type(p)){
-	case king:
-		check_move_king(p, x, y);
-		break;
-	case rook:
-		check_move_rook(b, p, x, y, false, NULL);
-		break;
-	case bishop:
-		check_move_bishop(b, p, x, y, false, NULL);
-		break;
-	case queen:
-		check_move_queen(b, p, x, y);
-		break;
-	case knight:
-		check_move_knight(p, x, y);
-		break;
-	case pawn:
-		check_move_pawn(b, p, x, y);
-		break;
-	}
-}
-
-static void check_move_same_pos(const Piece p, uint_fast8_t x, uint_fast8_t y)
-{
-	#define FUNC_NAME "static void check_move_same_pos(const Piece p, "\
-		"uint_fast8_t x, uint_fast8_t y)"
-
-	if(piece_get_x(p) == x && piece_get_y(p) == y){
+	}else if(x_old == x_new && y_old == y_new){
 		if(!err_fnc_arr[PIECE_MOVE_SAME_POS])
 			err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_SAME_POS,
 				"In file " FILE_NAME ", " FUNC_NAME);
 		else
 			err_fnc_arr[PIECE_MOVE_SAME_POS](PIECE_MOVE_SAME_POS,
 				"In file " FILE_NAME ", " FUNC_NAME);
-	}
 
-	#undef FUNC_NAME
-}
-
-static void check_ally_overlap(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y)
-{
-	#define FUNC_NAME "static void check_ally_overlap(const Board b, " \
-		"const Piece p, uint_fast8_t x, uint_fast8_t y)"
-
-	if(
-		board_get_arr(b)[x][y]
+	}else if(!board_get_piece(b, x_old, y_old)){
+		if(!err_fnc_arr[BOARD_EMPTY_SQUARE])
+			err_fnc_arr[GLOBAL_ERROR](BOARD_EMPTY_SQUARE, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[BOARD_EMPTY_SQUARE](BOARD_EMPTY_SQUARE,
+				"In file " FILE_NAME ", " FUNC_NAME);
+	}else if(
+		board_get_piece(b, x_new, y_new)
 		&&
-		piece_get_color(p) == piece_get_color(board_get_arr(b)[x][y])
+		piece_get_color(board_get_piece(b, x_new, y_new))
+		==
+		piece_get_color(board_get_piece(b, x_old, y_old))
 	){
 		if(!err_fnc_arr[PIECE_MOVE_OVERLAPS_ALLY])
 			err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_OVERLAPS_ALLY,
@@ -231,17 +168,39 @@ static void check_ally_overlap(const Board b, const Piece p, uint_fast8_t x,
 	}
 
 	#undef FUNC_NAME
+
+	switch(piece_get_type(board_get_piece(b, x_old, y_old))){
+	case king:
+		check_move_king(x_old, y_old, x_new, y_new);
+		break;
+	case rook:
+		check_move_rook(b, x_old, y_old, x_new, y_new, false, NULL);
+		break;
+	case bishop:
+		check_move_bishop(b, x_old, y_old, x_new, y_new, false, NULL);
+		break;
+	case queen:
+		check_move_queen(b, x_old, y_old, x_new, y_new);
+		break;
+	case knight:
+		check_move_knight(x_old, y_old, x_new, y_new);
+		break;
+	case pawn:
+		check_move_pawn(b, x_old, y_old, x_new, y_new);
+		break;
+	}
 }
 
-static void check_move_king(const Piece p, uint_fast8_t x, uint_fast8_t y)
+static void check_move_king(uint_fast8_t x_old, uint_fast8_t y_old,
+	uint_fast8_t x_new, uint_fast8_t y_new)
 {
-	#define FUNC_NAME "static void check_move_king(const Piece p, " \
-		"uint_fast8_t x, uint_fast8_t y)"
+	#define FUNC_NAME "static void check_move_king(uint_fast8_t x_old, "\
+		"uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new)"
 
 	if(
-		piece_get_x(p) - 1 > x || piece_get_x(p) + 1 < x
+		x_old - 1 > x_new || x_old + 1 < x_new
 		||
-		piece_get_y(p) - 1 > y || piece_get_y(p) + 1 < y
+		y_old - 1 > y_new || y_old + 1 < y_new
 	){
 		if(!err_fnc_arr[PIECE_MOVE_NOT_IN_RANGE])
 			err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_NOT_IN_RANGE,
@@ -255,20 +214,21 @@ static void check_move_king(const Piece p, uint_fast8_t x, uint_fast8_t y)
 	#undef FUNC_NAME
 }
 
-static void check_move_rook(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y, bool checkQueen, bool *in_range)
+static void check_move_rook(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new,
+	bool checkQueen, bool *in_range)
 {
 	if(checkQueen)
 		*in_range = true;
 
 	#define FUNC_NAME "static void check_move_rook(const Board b, "\
-		"const Piece p, uint_fast8_t x, uint_fast8_t y, "\
-		"bool checkQueen, bool *in_range)"
+		"uint_fast8_t x_old, uint_fast8_t y_old, uint_fast8_t x_new, "\
+		"uint_fast8_t y_new, bool checkQueen, bool *in_range)"
 
 	//vertical check: bottom -> top
-	if(piece_get_y(p) == y && piece_get_x(p) < x){
-		for(uint_fast8_t i = piece_get_x(p) + 1; i < x; i++){
-			if(board_get_arr(b)[i][y]){
+	if(y_old == y_new && x_old < x_new){
+		for(uint_fast8_t i = x_old + 1; i < x_new; i++){
+			if(board_get_piece(b, i, y_old)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -281,9 +241,9 @@ static void check_move_rook(const Board b, const Piece p, uint_fast8_t x,
 			}
 		}
 	//vertical check: top -> bottom
-	}else if(piece_get_y(p) == y && piece_get_x(p) > x){
-		for(uint_fast8_t i = piece_get_x(p) - 1; i > x; i--){
-			if(board_get_arr(b)[i][y]){
+	}else if(y_old == y_new && x_old > x_new){
+		for(uint_fast8_t i = x_old - 1; i > x_new; i--){
+			if(board_get_piece(b, i, y_old)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -296,9 +256,9 @@ static void check_move_rook(const Board b, const Piece p, uint_fast8_t x,
 			}
 		}
 	//horizontal check: left -> right
-	}else if(piece_get_x(p) == x && piece_get_y(p) < y){
-		for(uint_fast8_t i = piece_get_y(p) + 1; i < y; i++){
-			if(board_get_arr(b)[x][i]){
+	}else if(x_old == x_new && y_old < y_new){
+		for(uint_fast8_t i = y_old + 1; i < y_new; i++){
+			if(board_get_piece(b, x_old, i)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -311,9 +271,9 @@ static void check_move_rook(const Board b, const Piece p, uint_fast8_t x,
 			}
 		}
 	//horizontal check: right -> left
-	}else if(piece_get_x(p) == x && piece_get_y(p) > y){
-		for(uint_fast8_t i = piece_get_y(p) - 1; i > y; i--){
-			if(board_get_arr(b)[x][i]){
+	}else if(x_old == x_new && y_old > y_new){
+		for(uint_fast8_t i = y_old - 1; i > y_new; i--){
+			if(board_get_piece(b, x_old, i)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -343,27 +303,28 @@ static void check_move_rook(const Board b, const Piece p, uint_fast8_t x,
 	#undef FUNC_NAME
 }
 
-static void check_move_bishop(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y, bool checkQueen, bool *in_range)
+static void check_move_bishop(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new,
+	bool checkQueen, bool *in_range)
 {
 	if(checkQueen)
 		*in_range = true;
 
 	#define FUNC_NAME "static void check_move_bishop(const Board b, "\
-		"const Piece p, uint_fast8_tx, uint_fast8_t y, "\
-		"bool checkQueen, bool *in_range)"
+		"uint_fast8_t x_old, uint_fast8_t y_old, uint_fast8_t x_new, "\
+		"uint_fast8_t y_new, bool checkQueen, bool *in_range)"
 
 	//bottom-left -> top-right
-	if(	piece_get_x(p) - x < 0
+	if(	x_old - x_new < 0
 		&&
-		piece_get_y(p) - y < 0
+		y_old - y_new < 0
 		&&
-		piece_get_x(p) - x == piece_get_y(p) - y
+		x_old - x_new == y_old - y_new
 	){
-		for(uint_fast8_t i = piece_get_x(p) + 1, j = piece_get_y(p) + 1;
-			i < x && j < y;
+		for(uint_fast8_t i = x_old + 1, j = y_old + 1;
+			i < x_new && j < y_new;
 			i++, j++){
-			if(board_get_arr(b)[i][j]){
+			if(board_get_piece(b, i, j)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -377,16 +338,16 @@ static void check_move_bishop(const Board b, const Piece p, uint_fast8_t x,
 		}
 	//top-left -> bottom right
 	}else if(
-		piece_get_x(p) - x > 0
+		x_old - x_new > 0
 		&&
-		piece_get_y(p) - y < 0
+		y_old - y_new < 0
 		&&
-		piece_get_x(p) - x == y - piece_get_y(p)
+		x_old - x_new == y_new - y_old
 	){
-		for(uint_fast8_t i = piece_get_x(p) - 1, j = piece_get_y(p) + 1;
-			i > x && j < y;
+		for(uint_fast8_t i = x_old - 1, j = y_old + 1;
+			i > x_new && j < y_new;
 			i--, j++){
-			if(board_get_arr(b)[i][j]){
+			if(board_get_piece(b, i, j)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -401,16 +362,16 @@ static void check_move_bishop(const Board b, const Piece p, uint_fast8_t x,
 		}
 	//top-right -> bottom-left
 	}else if(
-		piece_get_x(p) - x > 0
+		x_old - x_new > 0
 		&&
-		piece_get_y(p) - y > 0
+		y_old - y_new > 0
 		&&
-		piece_get_x(p) - x == piece_get_y(p) - y
+		x_old - x_new == y_old - y_new
 	){
-		for(uint_fast8_t i = piece_get_x(p) - 1, j = piece_get_y(p) - 1;
-			i > x && j > y;
+		for(uint_fast8_t i = x_old - 1, j = y_old - 1;
+			i > x_new && j > y_new;
 			i--, j--){
-			if(board_get_arr(b)[i][j]){
+			if(board_get_piece(b, i, j)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -424,16 +385,16 @@ static void check_move_bishop(const Board b, const Piece p, uint_fast8_t x,
 		}
 	//bottom-right -> top-left
 	}else if(
-		piece_get_x(p) - x < 0
+		x_old - x_new < 0
 		&&
-		piece_get_y(p) - y > 0
+		y_old - y_new > 0
 		&&
-		x - piece_get_x(p) == piece_get_y(p) - y
+		x_new - x_old == y_old - y_new
 	){
-		for(uint_fast8_t i = piece_get_x(p) + 1, j = piece_get_y(p) - 1;
-			i < x && j > y;
+		for(uint_fast8_t i = x_old + 1, j = y_old - 1;
+			i < x_new && j > y_new;
 			i++, j--){
-			if(board_get_arr(b)[i][j]){
+			if(board_get_piece(b, i, j)){
 				if(!err_fnc_arr[PIECE_MOVE_COLLISION]){
 					err_fnc_arr[GLOBAL_ERROR](
 						PIECE_MOVE_COLLISION, "In file "
@@ -463,17 +424,19 @@ static void check_move_bishop(const Board b, const Piece p, uint_fast8_t x,
 	#undef FUNC_NAME
 }
 
-static void check_move_queen(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y)
+static void check_move_queen(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new)
 {
 	bool bishop_in_range;
 	bool rook_in_range;
 
 	#define FUNC_NAME "static void check_move_queen(const Board b, "\
-		"const Piece p, uint_fast8_t x, uint_fast8_t y)"
+		"uint_fast8_t x_old, uint_fast8_t y_old, uint_fast8_t x_new, "\
+		"uint_fast8_t y_new)"
 
-	check_move_bishop(b, p, x, y, true, &bishop_in_range);
-	check_move_rook(b, p, x, y, true, &rook_in_range);
+	check_move_bishop(b, x_old, y_old, x_new, y_new, true,
+		&bishop_in_range);
+	check_move_rook(b, x_old, y_old, x_new, y_new, true, &rook_in_range);
 	if(!(bishop_in_range || rook_in_range)){
 		if(!err_fnc_arr[PIECE_MOVE_NOT_IN_RANGE])
 			err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_NOT_IN_RANGE,
@@ -487,27 +450,28 @@ static void check_move_queen(const Board b, const Piece p, uint_fast8_t x,
 	#undef FUNC_NAME
 }
 
-static void check_move_knight(const Piece p, uint_fast8_t x, uint_fast8_t y)
+static void check_move_knight(uint_fast8_t x_old, uint_fast8_t y_old,
+	uint_fast8_t x_new, uint_fast8_t y_new)
 {
-	#define FUNC_NAME "static void check_move_knight(const Board b, "\
-		"const Piece p, uint_fast8_t x, uint_fast8_t y)"
+	#define FUNC_NAME "static void check_move_knight(uint_fast8_t x_old, "\
+		"uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new)"
 
 	if(!(
-		(x - piece_get_x(p) == 2 && y - piece_get_y(p) == 1)
+		(x_new - x_old == 2 && y_new - y_old == 1)
 		||
-		(x - piece_get_x(p) == 1 && y - piece_get_y(p) == 2)
+		(x_new - x_old == 1 && y_new - y_old == 2)
 		||
-		(x - piece_get_x(p) == -1 && y - piece_get_y(p) == 2)
+		(x_new - x_old == -1 && y_new - y_old == 2)
 		||
-		(x - piece_get_x(p) == -2 && y - piece_get_y(p) == 1)
+		(x_new - x_old == -2 && y_new - y_old == 1)
 		||
-		(x - piece_get_x(p) == -2 && y - piece_get_y(p) == -1)
+		(x_new - x_old == -2 && y_new - y_old == -1)
 		||
-		(x - piece_get_x(p) == -1 && y - piece_get_y(p) == -2)
+		(x_new - x_old == -1 && y_new - y_old == -2)
 		||
-		(x - piece_get_x(p) == 1 && y - piece_get_y(p) == -2)
+		(x_new - x_old == 1 && y_new - y_old == -2)
 		||
-		(x - piece_get_x(p) == 2 && y - piece_get_y(p) == -1)
+		(x_new - x_old == 2 && y_new - y_old == -1)
 	)){
 		if(!err_fnc_arr[PIECE_MOVE_NOT_IN_RANGE])
 			err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_NOT_IN_RANGE,
@@ -522,21 +486,22 @@ static void check_move_knight(const Piece p, uint_fast8_t x, uint_fast8_t y)
 
 }
 
-static void check_move_pawn(const Board b, const Piece p, uint_fast8_t x,
-	uint_fast8_t y)
+static void check_move_pawn(const Board b, uint_fast8_t x_old,
+	uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new)
 {
 	#define FUNC_NAME "static void check_move_pawn(const Board b, "\
-		"const Piece p, uint_fast8_t x, uint_fast8_t y)"
+		"uint_fast8_t x_old, uint_fast8_t y_old, uint_fast8_t x_new, "\
+		"uint_fast8_t y_new)"
 
 	//black forward
 	if(
-		x - piece_get_x(p) == 1
+		x_new - x_old == 1
 		&&
-		y - piece_get_y(p) == 0
+		y_new - y_old == 0
 		&&
-		piece_get_color(p) == BLACK
+		piece_get_color(board_get_piece(b, x_old, y_old)) == BLACK
 	){
-		if(board_get_arr(b)[x][y]){
+		if(board_get_piece(b, x_new, y_new)){
 			if(!err_fnc_arr[PIECE_MOVE_COLLISION])
 				err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_COLLISION,
 					"In file " FILE_NAME ", " FUNC_NAME);
@@ -547,13 +512,13 @@ static void check_move_pawn(const Board b, const Piece p, uint_fast8_t x,
 		}
 	//white forward
 	}else if(
-		x - piece_get_x(p) == -1
+		x_new - x_old == -1
 		&&
-		y - piece_get_y(p) == 0
+		y_new - y_old == 0
 		&&
-		piece_get_color(p) == WHITE
+		piece_get_color(board_get_piece(b, x_old, y_old)) == WHITE
 	){
-		if(board_get_arr(b)[x][y]){
+		if(board_get_piece(b, x_new, y_new)){
 			if(!err_fnc_arr[PIECE_MOVE_COLLISION])
 				err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_COLLISION,
 					"In file " FILE_NAME ", " FUNC_NAME);
@@ -564,15 +529,19 @@ static void check_move_pawn(const Board b, const Piece p, uint_fast8_t x,
 		}
 	//black double forward
 	}else if(
-		x - piece_get_x(p) == 2
+		x_new - x_old == 2
 		&&
-		y - piece_get_y(p) == 0
+		y_new - y_old == 0
 		&&
-		piece_get_color(p) == BLACK
+		piece_get_color(board_get_piece(b, x_old, y_old)) == BLACK
 		&&
-		piece_get_x(p) == 1
+		x_old == 1
 	){
-		if(board_get_arr(b)[x][y] || board_get_arr(b)[x - 1][y]){
+		if(
+			board_get_piece(b, x_new, y_new)
+			||
+			board_get_piece(b, x_new - 1, y_new)
+		){
 			if(!err_fnc_arr[PIECE_MOVE_COLLISION])
 				err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_COLLISION,
 					"In file " FILE_NAME ", " FUNC_NAME);
@@ -583,15 +552,19 @@ static void check_move_pawn(const Board b, const Piece p, uint_fast8_t x,
 		}
 	//white double forward
 	}else if(
-		x - piece_get_x(p) == -2
+		x_new - x_old == -2
 		&&
-		y - piece_get_y(p) == 0
+		y_new - y_old == 0
 		&&
-		piece_get_color(p) == WHITE
+		piece_get_color(board_get_piece(b, x_old, y_old)) == WHITE
 		&&
-		piece_get_x(p) ==  6
+		x_old ==  6
 	){
-		if(board_get_arr(b)[x][y] || board_get_arr(b)[x + 1][y]){
+		if(
+			board_get_piece(b, x_new, y_new)
+			||
+			board_get_piece(b, x_new + 1, y_new)
+		){
 			if(!err_fnc_arr[PIECE_MOVE_COLLISION])
 				err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_COLLISION,
 					"In file " FILE_NAME ", " FUNC_NAME);
@@ -602,27 +575,27 @@ static void check_move_pawn(const Board b, const Piece p, uint_fast8_t x,
 		}
 	//black capture
 	}else if(
-		x - piece_get_x(p) == 1
+		x_new - x_old == 1
 		&&
-		y - piece_get_y(p) >= -1 && y - piece_get_y(p) <= 1
+		y_new - y_old >= -1 && y_new - y_old <= 1
 		&&
-		piece_get_color(p) == BLACK
+		piece_get_color(board_get_piece(b, x_old, y_old)) == BLACK
 		&&
-		board_get_arr(b)[x][y]
+		board_get_piece(b, x_new, y_new)
 		&&
-		piece_get_color(board_get_arr(b)[x][y]) == WHITE
+		piece_get_color(board_get_piece(b, x_new, y_new)) == WHITE
 	){
 	//white capture
 	}else if(
-		x - piece_get_x(p) == -1
+		x_new - x_old == -1
 		&&
-		y - piece_get_y(p) >= -1 && y - piece_get_y(p) <= 1
+		y_new - y_old >= -1 && y_new - y_old <= 1
 		&&
-		piece_get_color(p) == WHITE
+		piece_get_color(board_get_piece(b, x_old, y_old)) == WHITE
 		&&
-		board_get_arr(b)[x][y]
+		board_get_piece(b, x_new, y_new)
 		&&
-		piece_get_color(board_get_arr(b)[x][y]) == BLACK
+		piece_get_color(board_get_piece(b, x_new, y_new)) == BLACK
 	){
 	//illegal move
 	}else{

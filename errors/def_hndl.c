@@ -60,6 +60,18 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr,
 			"collision occured while moving piece\n");
 		break;
+	case BOARD_EMPTY_SQUARE:
+		fprintf(stderr, "ERROR #%d (BOARD_MOVE_PIECE_EMPTY_SQUARE)\n",
+			err);
+		fprintf(stderr,
+			"attempting to manipulate an empty square\n");
+		break;
+	case BOARD_NONEMPTY_SQUARE:
+		fprintf(stderr, "ERROR #%d (BOARD_MOVE_PIECE_NONEMPTY_SQUARE)\n"
+			, err);
+		fprintf(stderr,
+			"attempting to overwrite a non-empty square\n");
+		break;
 	default:
 		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
 	}

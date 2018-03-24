@@ -114,22 +114,123 @@ void board_destroy(Board *b)
 	*b = NULL;
 }
 
-Piece **board_get_arr(const Board b)
+void board_link_piece(Board b, Piece p, uint_fast8_t x, uint_fast8_t y)
 {
-	#define FUNC_NAME "Piece **board_get_arr(Board b)"
+	#define FUNC_NAME "void board_link_piece(Board b, Piece p, "\
+		"uint_fast8_t x, uint_fast8_t y"
 
-	if(!b){
+	if(!b || !p){
 		if(!err_fnc_arr[NULL_PARAM])
 			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
 				FILE_NAME ", " FUNC_NAME);
 		else
 			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file" FILE_NAME
 			", " FUNC_NAME);
+
+	}else if(x >= BOARD_SIZE || y >= BOARD_SIZE){
+		if(!err_fnc_arr[INVALID_INT_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_INT_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_INT_PARAM](INVALID_INT_PARAM,
+				"In file" FILE_NAME ", " FUNC_NAME);
+
+	}else if(b->board_arr[x][y]){
+		if(!err_fnc_arr[BOARD_NONEMPTY_SQUARE])
+			err_fnc_arr[GLOBAL_ERROR](BOARD_NONEMPTY_SQUARE,
+				"In file " FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[BOARD_NONEMPTY_SQUARE](
+				BOARD_NONEMPTY_SQUARE, "In file " FILE_NAME ", "
+				FUNC_NAME);
 	}
 
 	#undef FUNC_NAME
 
-	return b->board_arr;
+	b->board_arr[x][y] = p;
+	piece_set_pos(p, x, y);
+}
+
+void board_move_piece(Board b, uint_fast8_t x_old, uint_fast8_t y_old,
+	uint_fast8_t x_new, uint_fast8_t y_new)
+{
+	#define FUNC_NAME "void board_move_piece(Board b, uint_fast8_t x_old, "\
+		"uint_fast8_t y_old, uint_fast8_t x_new, uint_fast8_t y_new)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file " FILE_NAME
+				", " FUNC_NAME);
+
+	}else if(x_old >= BOARD_SIZE || y_old >= BOARD_SIZE ||
+		x_new >= BOARD_SIZE || y_new >= BOARD_SIZE){
+		if(!err_fnc_arr[INVALID_INT_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_INT_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_INT_PARAM](INVALID_INT_PARAM,
+				"In file " FILE_NAME ", " FUNC_NAME);
+
+	}else if(x_old == x_new && y_old == y_new){
+		if(!err_fnc_arr[PIECE_MOVE_SAME_POS])
+			err_fnc_arr[GLOBAL_ERROR](PIECE_MOVE_SAME_POS,
+				"In file " FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[PIECE_MOVE_SAME_POS](PIECE_MOVE_SAME_POS,
+				"In file " FILE_NAME ", " FUNC_NAME);
+
+	}else if(!b->board_arr[x_old][y_old]){
+		if(!err_fnc_arr[BOARD_EMPTY_SQUARE])
+			err_fnc_arr[GLOBAL_ERROR](BOARD_EMPTY_SQUARE, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[BOARD_EMPTY_SQUARE](BOARD_EMPTY_SQUARE,
+				"In file " FILE_NAME ", " FUNC_NAME);
+
+	}else if(b->board_arr[x_new][y_new]){
+		if(!err_fnc_arr[BOARD_NONEMPTY_SQUARE])
+			err_fnc_arr[GLOBAL_ERROR](BOARD_NONEMPTY_SQUARE,
+				"In file " FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[BOARD_NONEMPTY_SQUARE](BOARD_NONEMPTY_SQUARE
+				, "In file " FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	piece_set_pos(b->board_arr[x_old][y_old], x_new, y_new);
+	b->board_arr[x_new][y_new] = b->board_arr[x_old][y_old];
+	b->board_arr[x_old][y_old] = NULL;
+}
+
+Piece board_get_piece(Board b, uint_fast8_t x, uint_fast8_t y)
+{
+	#define FUNC_NAME "const Piece board_get_piece(Board b, "\
+		"uint_fast8_t x, uint_fast8_t y)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file " FILE_NAME
+				", " FUNC_NAME);
+
+	}else if(x >= BOARD_SIZE || y >= BOARD_SIZE){
+		if(!err_fnc_arr[INVALID_INT_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_INT_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_INT_PARAM](INVALID_INT_PARAM,
+				"In file " FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	return b->board_arr[x][y];
 }
 
 uint_fast8_t board_get_size(void)
@@ -202,36 +303,35 @@ enum PieceColor board_get_turn(const Board b)
 	return *(b->turn);
 }
 
-Piece board_remove_piece(Board b, Piece *p, bool destroy)
+Piece board_remove_piece(Board b, uint_fast8_t x, uint_fast8_t y, bool destroy)
 {
-	#define FUNC_NAME "Piece board_remove_piece(Board b, Piece *p, "\
-		"bool destroy)"
+	#define FUNC_NAME "Piece board_remove_piece(Board b, uint_fast8_t x, "\
+		"uint_fast8_t y, bool destroy)"
 
-	if(!b || !p){
+	if(!b){
 		if(!err_fnc_arr[NULL_PARAM])
 			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
 				FILE_NAME ", " FUNC_NAME);
 		else
-			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file" FILE_NAME 
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file " FILE_NAME
 				", " FUNC_NAME);
-	}
 
-	bool found = false;
-	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++)
-		for(uint_fast8_t j = 0; j < BOARD_SIZE; j++)
-			if(b->board_arr[i][j] == *p)
-				found = true;
-
-	if(!found){
-		if(!err_fnc_arr[PIECE_NOT_IN_BOARD])
-			err_fnc_arr[GLOBAL_ERROR](PIECE_NOT_IN_BOARD, "In file "
+	}else if(x >= BOARD_SIZE || y >= BOARD_SIZE){
+		if(!err_fnc_arr[INVALID_INT_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_INT_PARAM, "In file "
 				FILE_NAME ", " FUNC_NAME);
 		else
-			err_fnc_arr[PIECE_NOT_IN_BOARD](PIECE_NOT_IN_BOARD,
+			err_fnc_arr[INVALID_INT_PARAM](INVALID_INT_PARAM,
+				"In file " FILE_NAME ", " FUNC_NAME);
+
+	}else if(!b->board_arr[x][y]){
+		if(!err_fnc_arr[BOARD_EMPTY_SQUARE])
+			err_fnc_arr[GLOBAL_ERROR](BOARD_EMPTY_SQUARE, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[BOARD_EMPTY_SQUARE](BOARD_EMPTY_SQUARE,
 				"In file" FILE_NAME ", " FUNC_NAME);
 	}
-
-	b->board_arr[piece_get_x(*p)][piece_get_y(*p)] = NULL;
 
 	if(destroy){
 		if(b->b_capture_list || b->w_capture_list){
@@ -242,27 +342,32 @@ Piece board_remove_piece(Board b, Piece *p, bool destroy)
 				err_fnc_arr[CONFLICTING_PARAM](CONFLICTING_PARAM
 					, "In file " FILE_NAME ", " FUNC_NAME);
 		}
-		piece_destroy(p);
+		piece_destroy(&b->board_arr[x][y]);
+		b->board_arr[x][y] = NULL;
 		return NULL;
-
-	//sorry for this
 	}else{
 		if(b->b_capture_list || b->w_capture_list){
-			if(piece_get_color(*p) == WHITE){
+			if(piece_get_color(b->board_arr[x][y]) == WHITE){
 				for(uint_fast8_t i = 0; i < PIECE_COUNT; i++)
 					if(!b->w_capture_list[i]){
-						b->w_capture_list[i] = *p;
-						break;
+						b->w_capture_list[i] =
+						b->board_arr[x][y];
+						b->board_arr[x][y] = NULL;
+						return b->w_capture_list[i];
 					}
-			}else if(piece_get_color(*p) == BLACK){
+			}else{
 				for(uint_fast8_t i = 0; i < PIECE_COUNT; i++)
 					if(!b->b_capture_list[i]){
-						b->b_capture_list[i] = *p;
-						break;
+						b->b_capture_list[i] =
+						b->board_arr[x][y];
+						b->board_arr[x][y] = NULL;
+						return b->b_capture_list[i];
 					}
 			}
 		}
-		return *p;
+		Piece tmp = b->board_arr[x][y];
+		b->board_arr[x][y] = NULL;
+		return tmp;
 	}
 
 	#undef FUNC_NAME
