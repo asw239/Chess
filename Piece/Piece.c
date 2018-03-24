@@ -25,19 +25,19 @@ Piece piece_create(void)
 	if(!p)
 		err_fnc_ptr(MEM_FAIL, "In file " FILE_NAME ", " FUNC_NAME);
 
-	p->pt = malloc(sizeof(enum PieceType));
+	p->pt = calloc(1, sizeof(enum PieceType));
 	if(!p->pt)
 		err_fnc_ptr(MEM_FAIL, "In file " FILE_NAME ", " FUNC_NAME);
 
-	p->x = malloc(sizeof(uint_fast8_t));
+	p->x = calloc(1, sizeof(uint_fast8_t));
 	if(!p->x)
 		err_fnc_ptr(MEM_FAIL, "In file " FILE_NAME ", " FUNC_NAME);
 
-	p->y = malloc(sizeof(uint_fast8_t));
+	p->y = calloc(1, sizeof(uint_fast8_t));
 	if(!p->y)
 		err_fnc_ptr(MEM_FAIL, "In file " FILE_NAME ", " FUNC_NAME);
 
-	p->color = malloc(sizeof(enum PieceColor));
+	p->color = calloc(1, sizeof(enum PieceColor));
 	if(!p->color)
 		err_fnc_ptr(MEM_FAIL, "In file " FILE_NAME ", " FUNC_NAME);
 

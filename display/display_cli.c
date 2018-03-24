@@ -120,7 +120,7 @@ static void div_vert(uint_fast8_t row, const Board b)
 	for(uint_fast8_t i = 0; i < board_get_size(); i++){
 		for(uint_fast8_t j = 0; j < QUADRANT_SIZE / 2; j++)
 			printf(" ");
-		print_piece(board_get_arr(b)[row - 1][i]);
+		print_piece(board_get_piece(b, row - 1, i));
 		for(uint_fast8_t j = 0; j < QUADRANT_SIZE / 2; j++)
 			printf(" ");
 
