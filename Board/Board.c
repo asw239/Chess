@@ -1,5 +1,6 @@
 #include "Board.h"
 #include "../errors/def_hndl.h"
+#include "../game_logic/game_logic.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -190,17 +191,19 @@ void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 			err_fnc_arr[BOARD_EMPTY_SQUARE](BOARD_EMPTY_SQUARE,
 				"In file " FILE_NAME ", " FUNC_NAME);
 
-	}else if(b->board_arr[r_new][c_new]){
-		if(!err_fnc_arr[BOARD_NONEMPTY_SQUARE])
-			err_fnc_arr[GLOBAL_ERROR](BOARD_NONEMPTY_SQUARE,
-				"In file " FILE_NAME ", " FUNC_NAME);
-		else
-			err_fnc_arr[BOARD_NONEMPTY_SQUARE](BOARD_NONEMPTY_SQUARE
-				, "In file " FILE_NAME ", " FUNC_NAME);
 	}
 
 	#undef FUNC_NAME
 
+	validate_move(b, r_old, c_old, r_new, c_new);
+
+	if(b->board_arr[r_new][c_new]){
+		if(b->b_capture_list && b->w_capture_list){
+			board_remove_piece(b, r_new, c_new, false);
+		}else{
+			board_remove_piece(b, r_new, c_new, true);
+		}
+	}
 	piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
 	b->board_arr[r_new][c_new] = b->board_arr[r_old][c_old];
 	b->board_arr[r_old][c_old] = NULL;
@@ -412,15 +415,6 @@ void board_init_capture_list(Board b)
 Piece *board_get_capture_list(const Board b, enum PieceColor c)
 {
 	#define FUNC_NAME "Piece *board_get_capture_list(Board b)"
-
-	if(!b || !b->b_capture_list || !b->w_capture_list){
-		if(!err_fnc_arr[NULL_PARAM])
-			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
-				FILE_NAME ", " FUNC_NAME);
-		else
-			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file" FILE_NAME 
-				", " FUNC_NAME);
-	}
 
 	if(c != WHITE && c != BLACK){
 		if(!err_fnc_arr[INVALID_ENUM_PARAM])

@@ -6,7 +6,8 @@
 
 #define FILE_NAME "display_cli.c"
 #define QUADRANT_SIZE 3
-#define OFFSET 9		// multiples of 3
+#define OFFSET 6		// multiples of 3
+#define CAPTURE_LIST_PADDING 1
 
 static void padding_vert(void);
 static void padding_hori(void);
@@ -14,6 +15,7 @@ static void div_hori(void);
 static void letters(void);
 static void div_vert(uint_fast8_t row, const Board b);
 static void print_piece(const Piece p);
+static void print_capture_list(Board b, enum PieceColor c);
 
 static void (*err_fnc_arr[ERROR_CODE_COUNT])(enum ErrorCode err,
 	const char *msg) = {[GLOBAL_ERROR] = def_hndl};
@@ -71,6 +73,11 @@ void print_board(const Board b)
 
 	#undef FUNC_NAME
 
+	if(board_get_capture_list(b, BLACK)){
+		print_capture_list(b, BLACK);
+		printf("\n");
+	}
+
 	padding_vert();
 	letters();
 	printf("\n");
@@ -87,6 +94,11 @@ void print_board(const Board b)
 	letters();
 	printf("\n");
 	padding_vert();
+
+	if(board_get_capture_list(b, WHITE)){
+		print_capture_list(b, WHITE);
+		printf("\n");
+	}
 }
 
 static void padding_vert(void)
@@ -184,6 +196,55 @@ static void print_piece(const Piece p)
 		printf("%lc", a_b_pawn);
 }
 
+static void print_capture_list(Board b, enum PieceColor c)
+{
+	#define FUNC_NAME "print_capture_lists(Board b)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file " FILE_NAME
+			", " FUNC_NAME);
+
+	}else if(c != WHITE && c != BLACK){
+		if(!err_fnc_arr[INVALID_ENUM_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	padding_hori();
+	uint_fast8_t printed_board_size =
+		(QUADRANT_SIZE + 1) * board_get_size() + 5;
+	uint_fast8_t capture_list_size =
+		PIECE_COUNT +
+		(PIECE_COUNT * CAPTURE_LIST_PADDING) - CAPTURE_LIST_PADDING;
+	for(
+		uint_fast8_t i = 0;
+		i < (printed_board_size - capture_list_size) / 2;
+		i++
+	)
+		printf(" ");
+
+	for(uint_fast8_t i = 0; i < PIECE_COUNT; i++){
+		for(uint_fast8_t j = 0; j < CAPTURE_LIST_PADDING; j++){
+			if(i != 0)
+				printf(" ");
+			if(c == WHITE)
+				print_piece(
+					board_get_capture_list(b, WHITE)[i]
+				);
+			else
+				print_piece(
+					board_get_capture_list(b, BLACK)[i]
+				);
+		}
+	}
+}
+
 void display_set_err_hndl(enum ErrorCode error_type,
 	void (*err_hndl)(enum ErrorCode err, const char *msg))
 {
@@ -194,6 +255,8 @@ void display_set_err_hndl(enum ErrorCode error_type,
 		error_type != GLOBAL_ERROR
 		||
 		error_type != NULL_PARAM
+		||
+		error_type != INVALID_ENUM_PARAM
 	))
 		err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
 			FILE_NAME ", " FUNC_NAME);
