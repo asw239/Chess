@@ -27,6 +27,13 @@ Board generate_start_board(void)
 	Board b = board_create();
 	board_set_turn(b, WHITE);
 
+	board_set_piece_moved(b, W_L_ROOK, false);
+	board_set_piece_moved(b, W_R_ROOK, false);
+	board_set_piece_moved(b, W_KING, false);
+	board_set_piece_moved(b, B_L_ROOK, false);
+	board_set_piece_moved(b, B_R_ROOK, false);
+	board_set_piece_moved(b, B_KING, false);
+
 	Piece tmp; 
 
 	tmp = piece_create();

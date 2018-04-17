@@ -16,6 +16,7 @@ struct BoardStruct{
 	enum PieceColor *turn;
 	Piece *w_capture_list;
 	Piece *b_capture_list;
+	bool *unmoved_pieces;
 };
 
 Board board_create(void)
@@ -60,8 +61,18 @@ Board board_create(void)
 			err_fnc_arr[GLOBAL_ERROR](MEM_FAIL, "In file "
 				FILE_NAME ", " FUNC_NAME);
 		else
-			err_fnc_arr[MEM_FAIL](MEM_FAIL, "In file" FILE_NAME
-			", " FUNC_NAME);
+			err_fnc_arr[MEM_FAIL](MEM_FAIL, "In file " FILE_NAME
+				", " FUNC_NAME);
+	}
+
+	b->unmoved_pieces = malloc(sizeof(bool) * UNMOVED_PIECES_COUNT);
+	if(!b->unmoved_pieces){
+		if(!err_fnc_arr[MEM_FAIL])
+			err_fnc_arr[GLOBAL_ERROR](MEM_FAIL, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[MEM_FAIL](MEM_FAIL, "In file " FILE_NAME
+				", " FUNC_NAME);
 	}
 
 	#undef FUNC_NAME
@@ -110,6 +121,7 @@ void board_destroy(Board *b)
 	free((*b)->board_arr);
 
 	free((*b)->turn);
+	free((*b)->unmoved_pieces);
 	free(*b);
 
 	*b = NULL;
@@ -416,6 +428,15 @@ Piece *board_get_capture_list(const Board b, enum PieceColor c)
 {
 	#define FUNC_NAME "Piece *board_get_capture_list(Board b)"
 
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
 	if(c != WHITE && c != BLACK){
 		if(!err_fnc_arr[INVALID_ENUM_PARAM])
 			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
@@ -428,6 +449,63 @@ Piece *board_get_capture_list(const Board b, enum PieceColor c)
 	#undef FUNC_NAME
 
 	return c == WHITE ? b->w_capture_list : b->b_capture_list;
+}
+
+void board_set_piece_moved(const Board b, enum UnmovedPieces p, bool moved)
+{
+	#define FUNC_NAME "void board_set_piece_moved(const Board b, "\
+		"enum UnmovedPieces p, bool moved)"
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	if(p != W_L_ROOK && p != W_R_ROOK && p != W_KING &&
+		p != B_L_ROOK && p != B_R_ROOK && p != B_KING){
+		if(!err_fnc_arr[INVALID_ENUM_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_ENUM_PARAM](INVALID_ENUM_PARAM,
+				"In file " FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	b->unmoved_pieces[p] = moved;
+}
+
+bool board_has_piece_moved(const Board b, enum UnmovedPieces p)
+{
+	#define FUNC_NAME "bool board_has_piece_moved(const Board b, "\
+		"enum UnmovedPieces p"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	if(p != W_L_ROOK && p != W_R_ROOK && p != W_KING &&
+		p != B_L_ROOK && p != B_R_ROOK && p != B_KING){
+		if(!err_fnc_arr[INVALID_ENUM_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_ENUM_PARAM](INVALID_ENUM_PARAM,
+				"In file " FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	return b->unmoved_pieces[p];
 }
 
 void board_set_err_hndl(enum ErrorCode error_type,
