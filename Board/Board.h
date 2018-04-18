@@ -43,9 +43,13 @@ void board_init_capture_list(Board b);
 
 Piece *board_get_capture_list(const Board b, enum PieceColor c);
 
-void board_set_piece_moved(const Board b, enum UnmovedPieces p, bool moved);
+void board_set_piece_moved(Board b, enum UnmovedPieces p, bool moved);
 
 bool board_has_piece_moved(const Board b, enum UnmovedPieces p);
+
+void board_set_king_checked(Board b, enum PieceColor c, bool checked);
+
+bool board_is_king_checked(const Board b, enum PieceColor c);
 
 void board_set_err_hndl(enum ErrorCode error_type,
 	void (*err_hndl)(enum ErrorCode err, const char *msg));

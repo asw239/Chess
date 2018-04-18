@@ -17,6 +17,8 @@ struct BoardStruct{
 	Piece *w_capture_list;
 	Piece *b_capture_list;
 	bool *unmoved_pieces;
+	bool *w_king_checked;
+	bool *b_king_checked;
 };
 
 Board board_create(void)
@@ -75,6 +77,26 @@ Board board_create(void)
 				", " FUNC_NAME);
 	}
 
+	b->w_king_checked = malloc(sizeof(bool));
+	if(!b->w_king_checked){
+		if(!err_fnc_arr[MEM_FAIL])
+			err_fnc_arr[GLOBAL_ERROR](MEM_FAIL, "In file " FILE_NAME
+				", " FUNC_NAME);
+		else
+			err_fnc_arr[MEM_FAIL](MEM_FAIL, "In file " FILE_NAME
+				", " FUNC_NAME);
+	}
+
+	b->b_king_checked = malloc(sizeof(bool));
+	if(!b->b_king_checked){
+		if(!err_fnc_arr[MEM_FAIL])
+			err_fnc_arr[GLOBAL_ERROR](MEM_FAIL, "In file " FILE_NAME
+				", " FUNC_NAME);
+		else
+			err_fnc_arr[MEM_FAIL](MEM_FAIL, "In file " FILE_NAME
+				", " FUNC_NAME);
+	}
+
 	#undef FUNC_NAME
 
 	b->b_capture_list = NULL;
@@ -122,6 +144,8 @@ void board_destroy(Board *b)
 
 	free((*b)->turn);
 	free((*b)->unmoved_pieces);
+	free((*b)->w_king_checked);
+	free((*b)->b_king_checked);
 	free(*b);
 
 	*b = NULL;
@@ -451,7 +475,7 @@ Piece *board_get_capture_list(const Board b, enum PieceColor c)
 	return c == WHITE ? b->w_capture_list : b->b_capture_list;
 }
 
-void board_set_piece_moved(const Board b, enum UnmovedPieces p, bool moved)
+void board_set_piece_moved(Board b, enum UnmovedPieces p, bool moved)
 {
 	#define FUNC_NAME "void board_set_piece_moved(const Board b, "\
 		"enum UnmovedPieces p, bool moved)"
@@ -506,6 +530,64 @@ bool board_has_piece_moved(const Board b, enum UnmovedPieces p)
 	#undef FUNC_NAME
 
 	return b->unmoved_pieces[p];
+}
+
+void board_set_king_checked(Board b, enum PieceColor c, bool checked)
+{
+	#define FUNC_NAME "void board_set_king_checked(Board b, "\
+		"enum PieceColor c, bool checked)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	if(c != WHITE && c != BLACK){
+		if(!err_fnc_arr[INVALID_ENUM_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_ENUM_PARAM](INVALID_ENUM_PARAM,
+				"In file" FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	c == WHITE
+		? (*(b->w_king_checked) = checked)
+		: (*(b->b_king_checked) = checked);
+}
+
+bool board_is_king_checked(const Board b, enum PieceColor c)
+{
+	#define FUNC_NAME "bool board_is_king_checked(const Board b, "\
+		"enum PieceColor c)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	if(c != WHITE && c != BLACK){
+		if(!err_fnc_arr[INVALID_ENUM_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_ENUM_PARAM](INVALID_ENUM_PARAM,
+				"In file" FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	return c == WHITE ? *(b->w_king_checked) : *(b->b_king_checked);
 }
 
 void board_set_err_hndl(enum ErrorCode error_type,

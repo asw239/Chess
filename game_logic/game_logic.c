@@ -34,6 +34,9 @@ Board generate_start_board(void)
 	board_set_piece_moved(b, B_R_ROOK, false);
 	board_set_piece_moved(b, B_KING, false);
 
+	board_set_king_checked(b, WHITE, false);
+	board_set_king_checked(b, BLACK, false);
+
 	Piece tmp; 
 
 	tmp = piece_create();
