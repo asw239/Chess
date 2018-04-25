@@ -18,9 +18,15 @@ static void check_move_knight(uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new);
 static void check_move_pawn(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new);
+static void check_err_hndl(enum ErrorCode err, const char *msg);
+static void mate_err_hndl(enum ErrorCode err, const char *msg);
+static void mate_board_err_hndl(enum ErrorCode err, const char *msg);
 
 static void (*err_fnc_arr[ERROR_CODE_COUNT])(enum ErrorCode err,
 	const char *msg) = {[GLOBAL_ERROR] = def_hndl};
+static bool check_err_hndl_called;
+static bool mate_err_hndl_called;
+static bool mate_board_err_hndl_called;
 
 Board generate_start_board(void)
 {
@@ -621,6 +627,143 @@ static void check_move_pawn(const Board b, uint_fast8_t r_old,
 	#undef FUNC_NAME
 }
 
+bool check(Board b, enum PieceColor c)
+{
+	#define FUNC_NAME "bool check(Board b, PieceColor c)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	if(c != WHITE && c != BLACK){
+		if(!err_fnc_arr[INVALID_ENUM_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_ENUM_PARAM](INVALID_ENUM_PARAM,
+				"In file " FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	uint_fast8_t king_row;
+	uint_fast8_t king_col;
+
+	for(uint_fast8_t i = 0; i < board_get_size(); i++){
+		for(uint_fast8_t j = 0; j < board_get_size(); j++){
+			Piece curr_pce = board_get_piece(b, i, j);
+			if(curr_pce && piece_get_type(curr_pce) == KING &&
+				piece_get_color(curr_pce) == c){
+				king_row = i;
+				king_col = j;
+			}
+		}
+	}
+
+	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, check_err_hndl);
+	gl_set_err_hndl(PIECE_MOVE_COLLISION, check_err_hndl);
+	bool check = false;
+	check_err_hndl_called = false;
+	for(uint_fast8_t i = 0; i < board_get_size(); i++){
+		for(uint_fast8_t j = 0; j < board_get_size(); j++){
+			Piece curr_pce = board_get_piece(b, i, j);
+			if(curr_pce && piece_get_color(curr_pce) != c){
+				validate_move(b, i, j, king_row, king_col);
+				if(check_err_hndl_called == false){
+					check = true;
+					goto exit_loops;
+				}else{
+					check_err_hndl_called = false;
+				}
+			}
+		}
+	}
+
+	exit_loops:
+	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, NULL);
+	gl_set_err_hndl(PIECE_MOVE_COLLISION, NULL);
+
+	return check;
+}
+
+static void check_err_hndl(enum ErrorCode err, const char *msg)
+{
+	check_err_hndl_called = true;
+}
+
+bool mate(const Board b, enum PieceColor c)
+{
+	#define FUNC_NAME "bool mate(const Board b, enum PieceColor c)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	if(c != WHITE && c != BLACK){
+		if(!err_fnc_arr[INVALID_ENUM_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[INVALID_ENUM_PARAM](INVALID_ENUM_PARAM,
+				"In file " FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, mate_err_hndl);
+	gl_set_err_hndl(PIECE_MOVE_COLLISION, mate_err_hndl);
+	board_set_err_hndl(PIECE_MOVE_KING_CHECKED, mate_board_err_hndl);
+
+	bool check;
+	for(uint_fast8_t i = 0; i < board_get_size(); i++){
+		for(uint_fast8_t j = 0; j < board_get_size(); j++){
+			Piece curr_pce = board_get_piece(b, i, j);
+			if(curr_pce && piece_get_color(curr_pce) == c){
+				for(uint_fast8_t k = 0; k < board_get_size(); k++){
+					for(uint_fast8_t l = 0; l < board_get_size(); l++){
+						Board b_cpy = board_create_copy(b);
+						board_move_piece(&b_cpy, i, j, k, l);
+						if(!mate_err_hndl_called && !mate_board_err_hndl_called){
+							board_destroy(&b_cpy);
+							check = false;
+							goto exit_loops;
+						}else{
+							board_destroy(&b_cpy);
+							check = true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	exit_loops:
+	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, NULL);
+	gl_set_err_hndl(PIECE_MOVE_COLLISION, NULL);
+	board_set_err_hndl(PIECE_MOVE_KING_CHECKED, NULL);
+	return check;
+}
+
+static void mate_err_hndl(enum ErrorCode err, const char *msg)
+{
+	mate_err_hndl_called = true;
+}
+
+static void mate_board_err_hndl(enum ErrorCode err, const char *msg)
+{
+	mate_board_err_hndl_called = true;
+}
+
 void gl_set_err_hndl(enum ErrorCode error_type,
 	void (*err_hndl)(enum ErrorCode err, const char *msg))
 {
@@ -645,6 +788,8 @@ void gl_set_err_hndl(enum ErrorCode error_type,
 		error_type != BOARD_EMPTY_SQUARE
 		||
 		error_type != PIECE_MOVE_COLLISION
+		||
+		error_type != INVALID_ENUM_PARAM
 	))
 		err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
 			FILE_NAME ", " FUNC_NAME);

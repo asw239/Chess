@@ -11,4 +11,8 @@ void validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 void gl_set_err_hndl(enum ErrorCode error_type,
 	void (*err_hndl)(enum ErrorCode err, const char *msg));
 
+bool check(Board b, enum PieceColor c);
+
+bool mate(const Board b, enum PieceColor c);
+
 #endif

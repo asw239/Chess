@@ -105,6 +105,48 @@ Board board_create(void)
 	return b;
 }
 
+Board board_create_copy(const Board b)
+{
+	#define FUNC_NAME "Board board_create_copy(const Board b)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	Board new_b = board_create();
+
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++)
+		for(uint_fast8_t j = 0; j < BOARD_SIZE; j++)
+			if(b->board_arr[i][j])
+				new_b->board_arr[i][j] =
+					piece_create_copy(b->board_arr[i][j]);
+	*new_b->turn = *b->turn;
+	if(b->b_capture_list && b->w_capture_list){
+		board_init_capture_list(new_b);
+		for(uint_fast8_t i = 0; i < PIECE_COUNT; i++){
+			if(b->b_capture_list[i])
+				new_b->b_capture_list[i] =
+					piece_create_copy(b->b_capture_list[i]);
+			if(b->w_capture_list[i])
+				new_b->w_capture_list[i] =
+					piece_create_copy(b->w_capture_list[i]);
+		}
+	}
+	for(uint_fast8_t i = 0; i < UNMOVED_PIECES_COUNT; i++)
+		new_b->unmoved_pieces[i] = b->unmoved_pieces[i];
+	*new_b->b_king_checked = *b->b_king_checked;
+	*new_b->w_king_checked = *b->w_king_checked;
+
+	return new_b;
+}
+
 void board_destroy(Board *b)
 {
 	#define FUNC_NAME "void board_destroy(Board *b)"
@@ -188,11 +230,13 @@ void board_link_piece(Board b, Piece p, uint_fast8_t r, uint_fast8_t c)
 	piece_set_pos(p, r, c);
 }
 
-void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+void board_move_piece(Board *bd, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	#define FUNC_NAME "void board_move_piece(Board b, uint_fast8_t r_old, "\
-		"uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)"
+	#define FUNC_NAME "void board_move_piece(Board *b, uint_fast8_t r_old,"\
+		" uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)"
+
+	Board b = *bd;
 
 	if(!b){
 		if(!err_fnc_arr[NULL_PARAM])
@@ -229,20 +273,38 @@ void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 
 	}
 
-	#undef FUNC_NAME
-
 	validate_move(b, r_old, c_old, r_new, c_new);
 
+	Board cpy = board_create_copy(b);
+
 	if(b->board_arr[r_new][c_new]){
-		if(b->b_capture_list && b->w_capture_list){
+		if(b->b_capture_list && b->w_capture_list)
 			board_remove_piece(b, r_new, c_new, false);
-		}else{
+		else
 			board_remove_piece(b, r_new, c_new, true);
-		}
 	}
+
 	piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
 	b->board_arr[r_new][c_new] = b->board_arr[r_old][c_old];
 	b->board_arr[r_old][c_old] = NULL;
+
+	if(check(b, piece_get_color(b->board_arr[r_new][c_new]))){
+		board_destroy(&b);
+		*bd = cpy;
+		if(!err_fnc_arr[PIECE_MOVE_KING_CHECKED])
+			err_fnc_arr[GLOBAL_ERROR](
+				PIECE_MOVE_KING_CHECKED, "In file " FILE_NAME
+				", " FUNC_NAME);
+		else
+			err_fnc_arr[PIECE_MOVE_KING_CHECKED](
+				PIECE_MOVE_KING_CHECKED, "In file " FILE_NAME
+				", " FUNC_NAME);
+		return ;
+	}
+
+	#undef FUNC_NAME
+
+	board_destroy(&cpy);
 }
 
 Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c)
@@ -590,6 +652,23 @@ bool board_is_king_checked(const Board b, enum PieceColor c)
 	return c == WHITE ? *(b->w_king_checked) : *(b->b_king_checked);
 }
 
+Piece **board_get_board_arr(Board b){
+	#define FUNC_NAME "Piece **board_get_board_arr(Board b)"
+
+	if(!b){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	return b->board_arr;
+
+	#undef FUNC_NAME
+}
+
 void board_set_err_hndl(enum ErrorCode error_type,
 	void (*err_hndl)(enum ErrorCode err, const char *msg))
 {
@@ -614,6 +693,8 @@ void board_set_err_hndl(enum ErrorCode error_type,
 		error_type != BOARD_EMPTY_SQUARE
 		||
 		error_type != PIECE_MOVE_SAME_POS
+		||
+		error_type != PIECE_MOVE_KING_CHECKED
 	))
 		err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
 			FILE_NAME ", " FUNC_NAME);

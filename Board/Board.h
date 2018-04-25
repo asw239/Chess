@@ -20,11 +20,13 @@ typedef struct BoardStruct *Board;
 
 Board board_create(void);
 
+Board board_create_copy(const Board b);
+
 void board_destroy(Board *b);
 
 void board_link_piece(Board b, Piece p, uint_fast8_t r, uint_fast8_t c);
 
-void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+void board_move_piece(Board *bd, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new);
 
 Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c);
@@ -50,6 +52,8 @@ bool board_has_piece_moved(const Board b, enum UnmovedPieces p);
 void board_set_king_checked(Board b, enum PieceColor c, bool checked);
 
 bool board_is_king_checked(const Board b, enum PieceColor c);
+
+Piece **board_get_board_arr(Board b);
 
 void board_set_err_hndl(enum ErrorCode error_type,
 	void (*err_hndl)(enum ErrorCode err, const char *msg));

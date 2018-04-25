@@ -77,6 +77,31 @@ Piece piece_create(void)
 	return p;
 }
 
+Piece piece_create_copy(const Piece p)
+{
+	#define FUNC_NAME "Piece piece_create_copy(const Piece p)"
+
+	if(!p){
+		if(!err_fnc_arr[NULL_PARAM])
+			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+		else
+			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file "
+				FILE_NAME ", " FUNC_NAME);
+	}
+
+	#undef FUNC_NAME
+
+	Piece p_new = piece_create();
+
+	*p_new->pt = *p->pt;
+	*p_new->r = *p->r;
+	*p_new->c = *p->c;
+	*p_new->color = *p->color;
+
+	return p_new;
+}
+
 void piece_destroy(Piece *p)
 {
 	#define FUNC_NAME "void piece_destroy(Piece *p)"

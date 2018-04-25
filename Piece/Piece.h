@@ -25,6 +25,8 @@ typedef struct PieceStruct *Piece;
 
 Piece piece_create(void);
 
+Piece piece_create_copy(const Piece p);
+
 void piece_destroy(Piece *p);
 
 void piece_set_type(Piece p, enum PieceType pt);
