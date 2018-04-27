@@ -3,12 +3,12 @@
 
 #include "../Board/Board.h"
 #include "../errors/ErrorCode.h"
+#include "../errors/error_utilities.h"
 
 void init_display(void);
 
 void print_board(const Board b);
 
-void display_set_err_hndl(enum ErrorCode error_type,
-	void (*err_hndl)(enum ErrorCode err, const char *msg));
+ErrFncPtr display_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl);
 
 #endif

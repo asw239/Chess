@@ -1,14 +1,17 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -Wfloat-equal -Wpointer-arith -Wcast-align -Wstrict-prototypes
 
-main : main.o ../errors/def_hndl.o ../Piece/Piece.o ../Board/Board.o ../game_logic/game_logic.o ../display/display_cli.o
-	$(CC) main.o ../errors/def_hndl.o ../Piece/Piece.o ../Board/Board.o ../game_logic/game_logic.o ../display/display_cli.o -o main
+main : main.o ../errors/def_hndl.o ../errors/error_utilities.o ../Piece/Piece.o ../Board/Board.o ../game_logic/game_logic.o ../display/display_cli.o
+	$(CC) main.o ../errors/def_hndl.o ../errors/error_utilities.o ../Piece/Piece.o ../Board/Board.o ../game_logic/game_logic.o ../display/display_cli.o -o main
 
 main.o : main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 ../errors/def_hndl.o : ../errors/def_hndl.c
 	$(CC) $(CFLAGS) -c -o ../errors/def_hndl.o ../errors/def_hndl.c
+
+../errors/error_utilities.o : ../errors/error_utilities.c
+	$(CC) $(CFLAGS) -c -o ../errors/error_utilities.o ../errors/error_utilities.c
 
 ../Piece/Piece.o : ../Piece/Piece.c
 	$(CC) $(CFLAGS) -c -o ../Piece/Piece.o ../Piece/Piece.c
@@ -23,4 +26,4 @@ main.o : main.c
 	$(CC) $(CFLAGS) -c -o ../display/display_cli.o ../display/display_cli.c
 
 clean :
-	rm main main.o ../errors/def_hndl.o ../Piece/Piece.o ../Board/Board.o ../game_logic/game_logic.o ../display/display_cli.o
+	rm main main.o ../errors/def_hndl.o ../errors/error_utilities.o ../Piece/Piece.o ../Board/Board.o ../game_logic/game_logic.o ../display/display_cli.o

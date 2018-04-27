@@ -4,7 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-#define FILE_NAME "display_cli.c"
 #define QUADRANT_SIZE 3
 #define OFFSET 6		// multiples of 3
 #define CAPTURE_LIST_PADDING 1
@@ -17,8 +16,8 @@ static void div_vert(uint_fast8_t row, const Board b);
 static void print_piece(const Piece p);
 static void print_capture_list(Board b, enum PieceColor c);
 
-static void (*err_fnc_arr[ERROR_CODE_COUNT])(enum ErrorCode err,
-	const char *msg) = {[GLOBAL_ERROR] = def_hndl};
+static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
+static const char *FILE_NAME = "display_cli.c";
 
 enum UPieceType{
 	u_w_king	= L'\u2654',
@@ -60,18 +59,12 @@ void init_display(void)
 
 void print_board(const Board b)
 {
-	#define FUNC_NAME "void print_board(const Board b)"
+	const char *FUNC_NAME = "void print_board(const Board b)";
 
 	if(!b){
-		if(!err_fnc_arr[NULL_PARAM])
-			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
-				FILE_NAME ", " FUNC_NAME);
-		else
-			err_fnc_arr[NULL_PARAM](NULL_PARAM, " In file "
-				FILE_NAME ", " FUNC_NAME);
+		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
+		return ;
 	}
-
-	#undef FUNC_NAME
 
 	if(board_get_capture_list(b, BLACK)){
 		print_capture_list(b, BLACK);
@@ -82,7 +75,7 @@ void print_board(const Board b)
 	letters();
 	printf("\n");
 
-	for(uint_fast8_t i = board_get_size(); i > 0; i--){
+	for(uint_fast8_t i = BOARD_SIZE; i > 0; i--){
 		div_hori();
 		printf("\n");
 		div_vert(i, b);
@@ -118,7 +111,7 @@ static void letters(void)
 	padding_hori();
 	printf("  ");
 
-	for(uint_fast8_t i = 0; i < board_get_size(); i++){
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
 		for(uint_fast8_t j = 0; j < (QUADRANT_SIZE - 1) / 2 + 1; j++)
 			printf(" ");
 		printf("%c", 'A' + i);
@@ -132,7 +125,7 @@ static void div_hori(void)
 	padding_hori();
 	printf("  ");
 
-	for(uint_fast8_t i = 0; i < board_get_size(); i++){
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
 		printf("+");
 		for(uint_fast8_t j = 0; j < QUADRANT_SIZE; j++)
 			printf("-");
@@ -147,7 +140,7 @@ static void div_vert(uint_fast8_t row, const Board b)
 
 	printf("%d", row);
 	printf(" |");
-	for(uint_fast8_t i = 0; i < board_get_size(); i++){
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
 		for(uint_fast8_t j = 0; j < QUADRANT_SIZE / 2; j++)
 			printf(" ");
 		print_piece(board_get_piece(b, row - 1, i));
@@ -198,27 +191,9 @@ static void print_piece(const Piece p)
 
 static void print_capture_list(Board b, enum PieceColor c)
 {
-	#define FUNC_NAME "print_capture_lists(Board b)"
-
-	if(!b){
-		if(!err_fnc_arr[NULL_PARAM])
-			err_fnc_arr[GLOBAL_ERROR](NULL_PARAM, "In file "
-				FILE_NAME ", " FUNC_NAME);
-		else
-			err_fnc_arr[NULL_PARAM](NULL_PARAM, "In file " FILE_NAME
-			", " FUNC_NAME);
-
-	}else if(c != WHITE && c != BLACK){
-		if(!err_fnc_arr[INVALID_ENUM_PARAM])
-			err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
-				FILE_NAME ", " FUNC_NAME);
-	}
-
-	#undef FUNC_NAME
-
 	padding_hori();
 	uint_fast8_t printed_board_size =
-		(QUADRANT_SIZE + 1) * board_get_size() + 5;
+		(QUADRANT_SIZE + 1) * BOARD_SIZE + 5;
 	uint_fast8_t capture_list_size =
 		PIECE_COUNT +
 		(PIECE_COUNT * CAPTURE_LIST_PADDING) - CAPTURE_LIST_PADDING;
@@ -245,23 +220,22 @@ static void print_capture_list(Board b, enum PieceColor c)
 	}
 }
 
-void display_set_err_hndl(enum ErrorCode error_type,
-	void (*err_hndl)(enum ErrorCode err, const char *msg))
+ErrFncPtr display_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
-	#define FUNC_NAME "void display_set_err_hndl(enum ErrorCode error_type"\
-		", void (*err_hndl)(enum ErrorCode err, const char *msg))"
+	const char *FUNC_NAME = "ErrFncPtr display_set_err_hndl(\
+enum ErrorCode error_type, ErrFncPtr err_hndl)";
 
 	if(!(
 		error_type != GLOBAL_ERROR
 		||
 		error_type != NULL_PARAM
-		||
-		error_type != INVALID_ENUM_PARAM
-	))
-		err_fnc_arr[GLOBAL_ERROR](INVALID_ENUM_PARAM, "In file "
-			FILE_NAME ", " FUNC_NAME);
+	)){
+		call_error(err_fnc_arr, INVALID_ENUM_PARAM, FILE_NAME,
+			FUNC_NAME);
+		return NULL;
+	}
 
-	#undef FUNC_NAME
-
+	ErrFncPtr tmp = err_fnc_arr[error_type];
 	err_fnc_arr[error_type] = err_hndl;
+	return tmp;
 }

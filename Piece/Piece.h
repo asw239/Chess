@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "../errors/ErrorCode.h"
+#include "../errors/error_utilities.h"
 
 #define PIECE_COUNT 16
 
@@ -43,7 +44,6 @@ void piece_set_color(Piece p, enum PieceColor c);
 
 enum PieceColor piece_get_color(const Piece p);
 
-void piece_set_err_hndl(enum ErrorCode error_type,
-	void (*err_hndl)(enum ErrorCode err, const char *msg));
+ErrFncPtr piece_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl);
 
 #endif

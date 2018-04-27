@@ -12,13 +12,12 @@ void board_test_link_move(void);
 void board_test_move_capture(void);
 void display_test_print_cap_list(void);
 void board_test_unmoved_pieces(void);
-void board_test_king_checked(void);
-void gl_test_check(void);
 void piece_test_copy(void);
+void board_test_destroy_error(void);
 
 int main(int argc, char *argv[])
 {
-	gl_test_check();
+	gl_test_move_validation();
 	return 0;
 }
 
@@ -47,15 +46,21 @@ void gl_test_move_validation(void)
 	piece_set_color(p1, WHITE);
 	piece_set_type(p1, QUEEN);
 	board_link_piece(b, p1, 5, 5);
+
 	Piece p2 = piece_create();
 	piece_set_color(p2, BLACK);
 	piece_set_type(p2, PAWN);
 	board_link_piece(b, p2, 5, 1);
-	print_board(b);
 
-	validate_move(b, 5, 5, 2, 1);
-	board_move_piece(&b, 5, 5, 2, 1);
+	Piece p3 = piece_create();
+	piece_set_color(p3, BLACK);
+	piece_set_type(p3, PAWN);
+	board_link_piece(b, p3, 5, 3);
+
 	print_board(b);
+	getchar();
+
+	board_move_piece(b, 5, 5, 5, 1);
 }
 
 void gl_test_start_board(void)
@@ -78,8 +83,8 @@ void board_test_link_move(void)
 	board_link_piece(b, p2, 1, 0);
 	print_board(b);
 
-	board_move_piece(&b, 6, 0, 5, 0);
-	board_move_piece(&b, 1, 0, 2, 0);
+	board_move_piece(b, 6, 0, 5, 0);
+	board_move_piece(b, 1, 0, 2, 0);
 	print_board(b);
 }
 
@@ -91,47 +96,47 @@ void board_test_move_capture(void)
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 0, 1, 2, 2);
+	board_move_piece(b, 0, 1, 2, 2);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 2, 2, 4, 1);
+	board_move_piece(b, 2, 2, 4, 1);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 4, 1, 6, 0);
+	board_move_piece(b, 4, 1, 6, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 6, 0, 7, 2);
+	board_move_piece(b, 6, 0, 7, 2);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 6, 3, 4, 3);
+	board_move_piece(b, 6, 3, 4, 3);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 4, 3, 3, 3);
+	board_move_piece(b, 4, 3, 3, 3);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 7, 4, 3, 0);
+	board_move_piece(b, 7, 4, 3, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 3, 0, 1, 0);
+	board_move_piece(b, 3, 0, 1, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 
 	getchar();
-	board_move_piece(&b, 1, 0, 0, 0);
+	board_move_piece(b, 1, 0, 0, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	print_board(b);
 }
@@ -164,138 +169,6 @@ void board_test_unmoved_pieces(void)
 
 	board_set_piece_moved(b, W_L_ROOK, true);
 	printf("W_L_ROOK moved? %d\n", board_has_piece_moved(b, W_L_ROOK));
-}
-
-void board_test_king_checked(void)
-{
-	Board b = generate_start_board();
-	printf("white king checked? %d\n", board_is_king_checked(b, WHITE));
-	printf("black king checked? %d\n", board_is_king_checked(b, BLACK));
-
-	board_set_king_checked(b, WHITE, true);
-	board_set_king_checked(b, BLACK, true);
-	printf("white king checked? %d\n", board_is_king_checked(b, WHITE));
-	printf("black king checked? %d\n", board_is_king_checked(b, BLACK));
-}
-
-void gl_test_check(void)
-{
-	Board b = board_create();
-	board_init_capture_list(b);
-
-	Piece p = piece_create();
-	piece_set_type(p, KING);
-	piece_set_color(p, WHITE);
-	piece_set_pos(p, 7, 3);
-	board_link_piece(b, p, 7, 3);
-
-	p = piece_create();
-	piece_set_type(p, QUEEN);
-	piece_set_color(p, WHITE);
-	piece_set_pos(p, 7, 2);
-	board_link_piece(b, p, 7, 2);
-
-	p = piece_create();
-	piece_set_type(p, PAWN);
-	piece_set_color(p, BLACK);
-	piece_set_pos(p, 5, 2);
-	board_link_piece(b, p, 5, 2);
-
-	p = piece_create();
-	piece_set_type(p, KNIGHT);
-	piece_set_color(p, BLACK);
-	piece_set_pos(p, 5, 7);
-	board_link_piece(b, p, 5, 7);
-
-	p = piece_create();
-	piece_set_type(p, KING);
-	piece_set_color(p, BLACK);
-	piece_set_pos(p, 0, 3);
-	board_link_piece(b, p, 0, 3);
-
-	p = piece_create();
-	piece_set_type(p, BISHOP);
-	piece_set_color(p, BLACK);
-	piece_set_pos(p, 0, 4);
-	board_link_piece(b, p, 0, 4);
-
-	p = piece_create();
-	piece_set_type(p, KNIGHT);
-	piece_set_color(p, BLACK);
-	piece_set_pos(p, 0, 6);
-	board_link_piece(b, p, 0, 6);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d\n", check(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_move_piece(&b, 5, 2, 6, 2);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d, Mate: %d\n", check(b, WHITE), mate(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_move_piece(&b, 7, 3, 6, 4);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d, Mate: %d\n", check(b, WHITE), mate(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_move_piece(&b, 5, 7, 4, 5);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d, Mate: %d\n", check(b, WHITE), mate(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_move_piece(&b, 7, 2, 4, 5);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d, Mate: %d\n", check(b, WHITE), mate(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_move_piece(&b, 0, 4, 3, 7);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d, Mate: %d\n", check(b, WHITE), mate(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_move_piece(&b, 4, 5, 4, 6);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d, Mate: %d\n", check(b, WHITE), mate(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_move_piece(&b, 4, 6, 0, 6);
-
-	for(int i = 0; i < 100; i++)
-		printf("\n");
-	printf("Check: %d, Mate: %d\n", check(b, WHITE), mate(b, WHITE));
-	print_board(b);
-	getchar();
-
-
-	board_destroy(&b);
 }
 
 void piece_test_copy(void)
@@ -333,4 +206,10 @@ void piece_test_copy(void)
 
 	piece_destroy(&p_orig);
 	piece_destroy(&p_cpy);
+}
+
+void board_test_destroy_error(void)
+{
+	board_set_err_hndl(NULL_PARAM, test_special);
+	board_destroy(0);
 }
