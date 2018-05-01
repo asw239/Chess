@@ -60,6 +60,11 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr,
 			"collision occured while moving piece\n");
 		break;
+	case PIECE_MOVE_KING_CHECKED:
+		fprintf(stderr, "ERROR #%d (PIECE_MOVE_KING_CHECKED)\n", err);
+		fprintf(stderr,
+			"king is under check, move piece appropriately\n");
+		break;
 	case BOARD_EMPTY_SQUARE:
 		fprintf(stderr, "ERROR #%d (BOARD_MOVE_PIECE_EMPTY_SQUARE)\n",
 			err);
