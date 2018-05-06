@@ -2,20 +2,24 @@
 #include "../errors/def_hndl.h"
 #include <stdlib.h>
 
-static void check_move_king(uint_fast8_t r_old, uint_fast8_t c_old,
+static bool check_move_king(uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new);
-static void check_move_rook(const Board b, uint_fast8_t r_old,
+static bool check_move_rook(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new,
 	bool check_queen, bool *in_range, bool *collision);
-static void check_move_bishop(const Board b, uint_fast8_t r_old,
+static bool check_move_bishop(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new,
 	bool check_queen, bool *in_range, bool *collision);
-static void check_move_queen(const Board b, uint_fast8_t r_old,
+static bool check_move_queen(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new);
-static void check_move_knight(uint_fast8_t r_old, uint_fast8_t c_old,
+static bool check_move_knight(uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new);
-static void check_move_pawn(const Board b, uint_fast8_t r_old,
+static bool check_move_pawn(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new);
+static Piece find_king(const Board b, enum PieceColor c);
+static void null_func(enum ErrorCode err, const char *msg);
+static Piece *generate_active_allies_list(const Board b, enum PieceColor c);
+static bool can_defend_mate(Board b, Piece p, enum PieceColor c);
 
 static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
 static const char *FILE_NAME = "game_logic.c";
@@ -117,35 +121,35 @@ Board generate_start_board(void)
 	return b;
 }
 
-void validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+bool validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	static const char *FUNC_NAME = "void validate_move(const Board b, \
+	static const char *FUNC_NAME = "bool validate_move(const Board b, \
 uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
 uint_fast8_t c_new)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
-		return ;
+		return false;
 	}
 
 	if(r_old >= BOARD_SIZE || c_old >= BOARD_SIZE ||
 		r_new >= BOARD_SIZE || c_new >= BOARD_SIZE){
 		call_error(err_fnc_arr, INVALID_INT_PARAM, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
 
 	if(r_old == r_new && c_old == c_new){
 		call_error(err_fnc_arr, PIECE_MOVE_SAME_POS, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
 
 	if(!board_get_piece(b, r_old, c_old)){
 		call_error(err_fnc_arr, BOARD_EMPTY_SQUARE, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
 
 	if(
@@ -155,39 +159,34 @@ uint_fast8_t c_new)";
 		==
 		piece_get_color(board_get_piece(b, r_old, c_old))
 	){
-		call_error(err_fnc_arr, PIECE_MOVE_SAME_POS, FILE_NAME,
+		call_error(err_fnc_arr, PIECE_MOVE_OVERLAPS_ALLY, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
 
 	switch(piece_get_type(board_get_piece(b, r_old, c_old))){
 	case KING:
-		check_move_king(r_old, c_old, r_new, c_new);
-		break;
+		return check_move_king(r_old, c_old, r_new, c_new);
 	case ROOK:
-		check_move_rook(b, r_old, c_old, r_new, c_new, false, NULL,
-			NULL);
-		break;
+		return check_move_rook(b, r_old, c_old, r_new, c_new, false,
+			NULL, NULL);
 	case BISHOP:
-		check_move_bishop(b, r_old, c_old, r_new, c_new, false, NULL,
-			NULL);
-		break;
+		return check_move_bishop(b, r_old, c_old, r_new, c_new, false,
+			NULL, NULL);
 	case QUEEN:
-		check_move_queen(b, r_old, c_old, r_new, c_new);
-		break;
+		return check_move_queen(b, r_old, c_old, r_new, c_new);
 	case KNIGHT:
-		check_move_knight(r_old, c_old, r_new, c_new);
-		break;
+		return check_move_knight(r_old, c_old, r_new, c_new);
 	case PAWN:
-		check_move_pawn(b, r_old, c_old, r_new, c_new);
-		break;
+		return check_move_pawn(b, r_old, c_old, r_new, c_new);
 	}
+	return false;
 }
 
-static void check_move_king(uint_fast8_t r_old, uint_fast8_t c_old,
+static bool check_move_king(uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static void check_move_king(\
+	const char *FUNC_NAME = "static bool check_move_king(\
 uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
 uint_fast8_t c_new)";
 
@@ -198,15 +197,16 @@ uint_fast8_t c_new)";
 	){
 		call_error(err_fnc_arr, PIECE_MOVE_NOT_IN_RANGE, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
+	return true;
 }
 
-static void check_move_rook(const Board b, uint_fast8_t r_old,
+static bool check_move_rook(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new,
 	bool check_queen, bool *in_range, bool *collision)
 {
-	const char *FUNC_NAME = "static void check_move_rook(const Board b, \
+	const char *FUNC_NAME = "static bool check_move_rook(const Board b, \
 uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
 uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 
@@ -221,11 +221,11 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, i, c_old)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//vertical check: top -> bottom
@@ -234,11 +234,11 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, i, c_old)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//horizontal check: left -> right
@@ -247,11 +247,11 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, r_old, i)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//horizontal check: right -> left
@@ -260,30 +260,31 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, r_old, i)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//illegal move
 	}else{
 		if(check_queen){
 			*in_range = false;
-			return ;
+			return false;
 		}
 		call_error(err_fnc_arr, PIECE_MOVE_NOT_IN_RANGE, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
+	return true;
 }
 
-static void check_move_bishop(const Board b, uint_fast8_t r_old,
+static bool check_move_bishop(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new,
 	bool check_queen, bool *in_range, bool *collision)
 {
-	const char *FUNC_NAME = "static void check_move_bishop(const Board b, \
+	const char *FUNC_NAME = "static bool check_move_bishop(const Board b, \
 uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
 uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 
@@ -305,11 +306,11 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, i, j)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//top-left -> bottom right
@@ -326,11 +327,11 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, i, j)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//top-right -> bottom-left
@@ -347,11 +348,11 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, i, j)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//bottom-right -> top-left
@@ -368,29 +369,30 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 			if(board_get_piece(b, i, j)){
 				if(check_queen){
 					*collision = true;
-					return ;
+					return false;
 				}
 				call_error(err_fnc_arr, PIECE_MOVE_COLLISION,
 					FILE_NAME, FUNC_NAME);
-				return ;
+				return false;
 			}
 		}
 	//illegal move
 	}else{
 		if(check_queen){
 			*in_range = false;
-			return ;
+			return false;
 		}
 		call_error(err_fnc_arr, PIECE_MOVE_NOT_IN_RANGE, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
+	return true;
 }
 
-static void check_move_queen(const Board b, uint_fast8_t r_old,
+static bool check_move_queen(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static void check_move_queen(const Board b, \
+	const char *FUNC_NAME = "static bool check_move_queen(const Board b, \
 uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
 uint_fast8_t c_new)";
 
@@ -406,19 +408,20 @@ uint_fast8_t c_new)";
 	if(!(bishop_in_range || rook_in_range)){
 		call_error(err_fnc_arr, PIECE_MOVE_NOT_IN_RANGE, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
 	if(bishop_collision || rook_collision){
 		call_error(err_fnc_arr, PIECE_MOVE_COLLISION, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
+	return true;
 }
 
-static void check_move_knight(uint_fast8_t r_old, uint_fast8_t c_old,
+static bool check_move_knight(uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static void check_move_knight(\
+	const char *FUNC_NAME = "static bool check_move_knight(\
 uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
 uint_fast8_t c_new)";
 
@@ -441,14 +444,15 @@ uint_fast8_t c_new)";
 	)){
 		call_error(err_fnc_arr, PIECE_MOVE_NOT_IN_RANGE, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
+	return true;
 }
 
-static void check_move_pawn(const Board b, uint_fast8_t r_old,
+static bool check_move_pawn(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static void check_move_pawn(const Board b, \
+	const char *FUNC_NAME = "static bool check_move_pawn(const Board b, \
 uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
 uint_fast8_t c_new)";
 
@@ -463,7 +467,7 @@ uint_fast8_t c_new)";
 		if(board_get_piece(b, r_new, c_new)){
 			call_error(err_fnc_arr, PIECE_MOVE_COLLISION, FILE_NAME,
 				FUNC_NAME);
-			return ;
+			return false;
 		}
 	//white forward
 	}else if(
@@ -476,7 +480,7 @@ uint_fast8_t c_new)";
 		if(board_get_piece(b, r_new, c_new)){
 			call_error(err_fnc_arr, PIECE_MOVE_COLLISION, FILE_NAME,
 				FUNC_NAME);
-			return ;
+			return false;
 		}
 	//black double forward
 	}else if(
@@ -495,7 +499,7 @@ uint_fast8_t c_new)";
 		){
 			call_error(err_fnc_arr, PIECE_MOVE_COLLISION, FILE_NAME,
 				FUNC_NAME);
-			return ;
+			return false;
 		}
 	//white double forward
 	}else if(
@@ -514,7 +518,7 @@ uint_fast8_t c_new)";
 		){
 			call_error(err_fnc_arr, PIECE_MOVE_COLLISION, FILE_NAME,
 				FUNC_NAME);
-			return ;
+			return false;
 		}
 	//black capture
 	}else if(
@@ -528,6 +532,7 @@ uint_fast8_t c_new)";
 		&&
 		piece_get_color(board_get_piece(b, r_new, c_new)) == WHITE
 	){
+		return true;
 	//white capture
 	}else if(
 		r_new - r_old == -1
@@ -540,12 +545,174 @@ uint_fast8_t c_new)";
 		&&
 		piece_get_color(board_get_piece(b, r_new, c_new)) == BLACK
 	){
+		return true;
 	//illegal move
 	}else{
 		call_error(err_fnc_arr, PIECE_MOVE_NOT_IN_RANGE, FILE_NAME,
 			FUNC_NAME);
-		return ;
+		return false;
 	}
+	return true;
+}
+
+bool check(const Board b, enum PieceColor c)
+{
+	const char *FUNC_NAME = "bool check(const Board b, enum PieceColor c)";
+
+	if(!b){
+		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
+		return false;
+	}
+
+	if(c != WHITE && c != BLACK){
+		call_error(err_fnc_arr, INVALID_ENUM_PARAM, FILE_NAME,
+			FUNC_NAME);
+		return false;
+	}
+
+	Piece king = find_king(b, c);
+	uint_fast8_t king_r = piece_get_r(king);
+	uint_fast8_t king_c = piece_get_c(king);
+
+	ErrFncPtr collision_cback =
+		gl_set_err_hndl(PIECE_MOVE_COLLISION, null_func);
+	ErrFncPtr not_in_range_cback =
+		gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, null_func);
+
+	bool return_val = false;
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
+		for(uint_fast8_t j = 0; j < BOARD_SIZE; j++){
+			Piece curr_p = board_get_board_arr(b)[i][j];
+			if(
+				curr_p
+				&&
+				piece_get_color(curr_p) != c
+				&&
+				!(i == king_r && j == king_c)
+				&&
+				validate_move(b, i, j, king_r, king_c)
+			){
+				return_val = true;
+				goto LOOPS_EXIT;
+			}
+		}
+	}
+	LOOPS_EXIT:
+
+	gl_set_err_hndl(PIECE_MOVE_COLLISION, collision_cback);
+	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, not_in_range_cback);
+
+	return return_val;
+}
+
+static Piece find_king(const Board b, enum PieceColor c)
+{
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
+		for(uint_fast8_t j = 0; j < BOARD_SIZE; j++){
+			Piece curr_p = board_get_board_arr(b)[i][j];
+			if(
+				curr_p
+				&&
+				piece_get_type(curr_p) == KING
+				&&
+				piece_get_color(curr_p) == c
+			)
+				return curr_p;
+		}
+	}
+	return NULL;
+}
+
+static void null_func(enum ErrorCode err, const char *msg)
+{
+	;
+}
+
+bool mate(const Board b, enum PieceColor c)
+{
+	const char *FUNC_NAME = "bool mate(const Board b, enum PieceColor c)";
+
+	if(!b){
+		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
+		return false;
+	}
+
+	if(c != WHITE && c != BLACK){
+		call_error(err_fnc_arr, INVALID_ENUM_PARAM, FILE_NAME,
+			FUNC_NAME);
+		return false;
+	}
+
+	if(!check(b, c))
+		return false;
+
+	Piece *active_allies_list = generate_active_allies_list(b, c);
+	bool return_val = true;
+	for(uint_fast8_t i = 0; active_allies_list[i]; i++)
+		if(can_defend_mate(b, active_allies_list[i], c)){
+			return_val = false;
+			break;
+		}
+
+	free(active_allies_list);
+	return return_val;
+}
+
+static Piece *generate_active_allies_list(const Board b, enum PieceColor c)
+{
+	Piece *list = calloc(PIECE_COUNT, sizeof(Piece));
+	uint_fast8_t list_i = 0;
+
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
+		for(uint_fast8_t j = 0; j < BOARD_SIZE; j++){
+			Piece curr_piece = board_get_board_arr(b)[i][j];
+			if(curr_piece && piece_get_color(curr_piece) == c)
+				list[list_i++] = curr_piece;
+		}
+	}
+
+	return list;
+}
+
+static bool can_defend_mate(Board b, Piece p, enum PieceColor c)
+{
+	uint_fast8_t piece_r = piece_get_r(p);
+	uint_fast8_t piece_c = piece_get_c(p);
+
+	ErrFncPtr collision_cback =
+		gl_set_err_hndl(PIECE_MOVE_COLLISION, null_func);
+	ErrFncPtr not_in_range_cback =
+		gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, null_func);
+	ErrFncPtr ally_overlap_cback =
+		gl_set_err_hndl(PIECE_MOVE_OVERLAPS_ALLY, null_func);
+
+	bool return_val = false;
+	for(uint_fast8_t i = 0; i < BOARD_SIZE; i++){
+		for(uint_fast8_t j = 0; j < BOARD_SIZE; j++){
+			if(
+				!(piece_r == i && piece_c == j)
+				&&
+				validate_move(b, piece_r, piece_c, i, j)
+			){
+				Board b_cpy = board_create_copy(b);
+				board_move_piece(b_cpy, piece_r, piece_c, i, j);
+				if(!check(b_cpy, c)){
+					board_destroy(&b_cpy);
+					return_val = true;
+					goto LOOPS_EXIT;
+				}else{
+					board_destroy(&b_cpy);
+				}
+			}
+		}
+	}
+	LOOPS_EXIT:
+
+	gl_set_err_hndl(PIECE_MOVE_COLLISION, collision_cback);
+	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, not_in_range_cback);
+	gl_set_err_hndl(PIECE_MOVE_OVERLAPS_ALLY, ally_overlap_cback);
+
+	return return_val;
 }
 
 ErrFncPtr gl_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
