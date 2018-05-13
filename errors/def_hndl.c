@@ -77,6 +77,11 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr,
 			"attempting to overwrite a non-empty square\n");
 		break;
+	case PIECE_MOVE_ILLEGAL_CASTLE:
+		fprintf(stderr, "ERROR #%d (PIECE_MOVE_ILLEGAL_CASTLE)\n", err);
+		fprintf(stderr,
+			"castling in the current board state is illegal\n");
+		break;
 	default:
 		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
 	}

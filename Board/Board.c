@@ -41,7 +41,7 @@ Board board_create(void)
 		}
 	}
 
-	b->turn = malloc(sizeof(uint_fast8_t));
+	b->turn = malloc(sizeof(enum PieceColor));
 	if(!b->turn){
 		call_error(err_fnc_arr, MEM_FAIL, FILE_NAME, FUNC_NAME);
 		return NULL;
@@ -188,7 +188,41 @@ uint_fast8_t c_new)";
 		return ;
 	}
 
-	validate_move(b, r_old, c_old, r_new, c_new);
+	if(piece_get_type(b->board_arr[r_old][c_old]) == KING){
+		if(check_castle(b, r_old, c_old, c_new)){
+			piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
+			b->board_arr[r_new][c_new] = b->board_arr[r_old][c_old];
+			b->board_arr[r_old][c_old] = NULL;
+
+			enum PieceColor king_c =
+				piece_get_color(b->board_arr[r_new][c_new]);
+			if(c_old - 2 == c_new && king_c == WHITE){
+				piece_set_pos(b->board_arr[7][0], 7, 2);
+				b->board_arr[7][2] = b->board_arr[7][0];
+				b->board_arr[7][0] = NULL;
+
+			}else if(c_old + 2 == c_new && king_c == WHITE){
+				piece_set_pos(b->board_arr[7][7], 7, 4);
+				b->board_arr[7][4] = b->board_arr[7][7];
+				b->board_arr[7][7] = NULL;
+
+			}else if(c_old - 2 == c_new && king_c == BLACK){
+				piece_set_pos(b->board_arr[0][0], 0, 2);
+				b->board_arr[0][2] = b->board_arr[0][0];
+				b->board_arr[0][0] = NULL;
+
+			}else if(c_old + 2 == c_new && king_c == BLACK){
+				piece_set_pos(b->board_arr[0][7], 0, 4);
+				b->board_arr[0][4] = b->board_arr[0][7];
+				b->board_arr[0][7] = NULL;
+			}
+
+			return ;
+		}
+	}
+
+	if(!validate_move(b, r_old, c_old, r_new, c_new))
+		return ;
 
 	if(b->board_arr[r_new][c_new]){
 		if(b->b_capture_list && b->w_capture_list)
@@ -200,6 +234,24 @@ uint_fast8_t c_new)";
 	piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
 	b->board_arr[r_new][c_new] = b->board_arr[r_old][c_old];
 	b->board_arr[r_old][c_old] = NULL;
+
+	if(r_old == 7 && c_old == 0 && !board_has_piece_moved(b, W_L_ROOK))
+		board_set_piece_moved(b, W_L_ROOK, true);
+
+	if(r_old == 7 && c_old == 7 && !board_has_piece_moved(b, W_R_ROOK))
+		board_set_piece_moved(b, W_R_ROOK, true);
+
+	if(r_old == 7 && c_old == 3 && !board_has_piece_moved(b, W_KING))
+		board_set_piece_moved(b, W_KING, true);
+
+	if(r_old == 0 && c_old == 0 && !board_has_piece_moved(b, B_L_ROOK))
+		board_set_piece_moved(b, B_L_ROOK, true);
+
+	if(r_old == 0 && c_old == 7 && !board_has_piece_moved(b, B_R_ROOK))
+		board_set_piece_moved(b, B_R_ROOK, true);
+
+	if(r_old == 0 && c_old == 3 && !board_has_piece_moved(b, B_KING))
+		board_set_piece_moved(b, B_KING, true);
 }
 
 Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c)
