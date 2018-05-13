@@ -29,10 +29,12 @@ void gl_test_castle4(enum PieceColor c, bool left_castle, bool queen,
 	bool bishop, bool knight);
 void gl_test_castle5(enum PieceColor c);
 void gl_test_castle6(enum PieceColor c, bool left_castle);
+void board_move_piece_castle(void);
+void board_move_piece_castle2(void);
 
 int main(int argc, char *argv[])
 {
-	board_test_copy();
+	board_move_piece_castle2();
 	return 0;
 }
 
@@ -1094,4 +1096,88 @@ void gl_test_castle6(enum PieceColor c, bool left_castle)
 
 	board_destroy(&b);
 
+}
+
+void board_move_piece_castle(void)
+{
+	// tests valid castle execution
+
+	Board b = board_create();
+	board_set_piece_moved(b, W_L_ROOK, false);
+	board_set_piece_moved(b, W_R_ROOK, false);
+	board_set_piece_moved(b, W_KING, false);
+	board_set_piece_moved(b, B_L_ROOK, false);
+	board_set_piece_moved(b, B_R_ROOK, false);
+	board_set_piece_moved(b, B_KING, false);
+
+	Piece p;
+
+	p = piece_create();
+	piece_set_type(p, ROOK);
+	piece_set_color(p, WHITE);
+	board_link_piece(b, p, 7, 0);
+
+	p = piece_create();
+	piece_set_type(p, KING);
+	piece_set_color(p, WHITE);
+	board_link_piece(b, p, 7, 3);
+
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_move_piece(b, 7, 3, 7, 1);
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_destroy(&b);
+}
+
+void board_move_piece_castle2(void)
+{
+	// tests in-valid castle execution
+
+	gl_set_err_hndl(PIECE_MOVE_ILLEGAL_CASTLE, null_error);
+	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, null_error);
+
+	Board b = board_create();
+	board_set_piece_moved(b, W_L_ROOK, false);
+	board_set_piece_moved(b, W_R_ROOK, false);
+	board_set_piece_moved(b, W_KING, false);
+	board_set_piece_moved(b, B_L_ROOK, false);
+	board_set_piece_moved(b, B_R_ROOK, false);
+	board_set_piece_moved(b, B_KING, false);
+
+	Piece p;
+
+	p = piece_create();
+	piece_set_type(p, ROOK);
+	piece_set_color(p, WHITE);
+	board_link_piece(b, p, 7, 0);
+
+	p = piece_create();
+	piece_set_type(p, KING);
+	piece_set_color(p, WHITE);
+	board_link_piece(b, p, 7, 3);
+
+	p = piece_create();
+	piece_set_type(p, QUEEN);
+	piece_set_color(p, BLACK);
+	board_link_piece(b, p, 0, 3);
+
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_move_piece(b, 7, 3, 7, 1);
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_destroy(&b);
 }
