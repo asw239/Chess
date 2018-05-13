@@ -20,6 +20,16 @@ static Piece find_king(const Board b, enum PieceColor c);
 static void null_func(enum ErrorCode err, const char *msg);
 static Piece *generate_active_allies_list(const Board b, enum PieceColor c);
 static bool can_defend_mate(Board b, Piece p, enum PieceColor c);
+static bool check_castle_attempt(uint_fast8_t c_old, uint_fast8_t c_new,
+	bool *attempting_left_castle, bool *attempting_right_castle);
+static bool check_castle_king_moved(Board b, enum PieceColor king_c);
+static bool check_castle_rook_moved(const Board b, enum PieceColor king_c,
+	bool attempting_left_castle, bool attempting_right_castle);
+static bool check_castle_pieces_inbetween(const Board b, enum PieceColor king_c,
+	bool attempting_left_castle, bool attempting_right_castle);
+static bool check_castle_king_in_check(const Board b, enum PieceColor king_c);
+static bool check_castle_through_check(const Board b, enum PieceColor king_c,
+	bool attempting_left_castle, bool attempting_right_castle);
 
 static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
 static const char *FILE_NAME = "game_logic.c";
@@ -199,6 +209,7 @@ uint_fast8_t c_new)";
 			FUNC_NAME);
 		return false;
 	}
+
 	return true;
 }
 
@@ -715,6 +726,286 @@ static bool can_defend_mate(Board b, Piece p, enum PieceColor c)
 	return return_val;
 }
 
+bool check_castle(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+	uint_fast8_t c_new)
+{
+	enum PieceColor king_c =
+		piece_get_color(board_get_board_arr(b)[r_old][c_old]);
+	bool attempting_left_castle;
+	bool attempting_right_castle;
+
+	if(!check_castle_attempt(c_old, c_new, &attempting_left_castle,
+		&attempting_right_castle))
+		return false;
+
+	if(check_castle_king_moved(b, king_c))
+		return false;
+
+	if(check_castle_rook_moved(b, king_c, attempting_left_castle,
+		attempting_right_castle))
+		return false;
+
+	if(check_castle_pieces_inbetween(b, king_c, attempting_left_castle,
+		attempting_right_castle))
+		return false;
+
+	if(check_castle_king_in_check(b, king_c))
+		return false;
+
+	if(check_castle_through_check(b, king_c, attempting_left_castle,
+		attempting_right_castle))
+		return false;
+
+	return true;
+}
+
+static bool check_castle_attempt(uint_fast8_t c_old, uint_fast8_t c_new,
+	bool *attempting_left_castle, bool *attempting_right_castle)
+{
+	*attempting_left_castle = false;
+	*attempting_right_castle = false;
+	if(c_old - 2 == c_new){
+		*attempting_left_castle = true;
+		return true;
+
+	}else if(c_old + 2 == c_new){
+		*attempting_right_castle = true;
+		return true;
+
+	}else{
+		return false;
+	}
+}
+
+static bool check_castle_king_moved(const Board b, enum PieceColor king_c)
+{
+	const char *FUNC_NAME = "static bool check_castle_king_moved(\
+const Board b, enum PieceColor king_c)";
+
+	if(king_c == WHITE && board_has_piece_moved(b, W_KING)){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else if(king_c == BLACK && board_has_piece_moved(b, B_KING)){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else{
+		return false;
+	}
+}
+
+static bool check_castle_rook_moved(const Board b, enum PieceColor king_c,
+	bool attempting_left_castle, bool attempting_right_castle)
+{
+	const char *FUNC_NAME = "static bool check_castle_rook_moved(\
+const Board b, enum PieceColor king_c, bool attempting_left_castle, \
+bool attempting_right_castle)";
+
+	if(
+		king_c == WHITE
+		&&
+		attempting_left_castle
+		&&
+		board_has_piece_moved(b, W_L_ROOK)
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else if(
+		king_c == WHITE
+		&&
+		attempting_right_castle
+		&&
+		board_has_piece_moved(b, W_R_ROOK)
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else if(
+		king_c == BLACK
+		&&
+		attempting_left_castle
+		&&
+		board_has_piece_moved(b, B_L_ROOK)
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else if(
+		king_c == BLACK
+		&&
+		attempting_right_castle
+		&&
+		board_has_piece_moved(b, B_R_ROOK)
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else{
+		return false;
+	}
+}
+
+static bool check_castle_pieces_inbetween(const Board b, enum PieceColor king_c,
+	bool attempting_left_castle, bool attempting_right_castle)
+{
+	const char *FUNC_NAME = "static bool check_castle_pieces_inbetween(\
+const Board b, enum PieceColor king_c, bool attempting_left_castle, \
+bool attempting_right_castle)";
+
+	Piece **board_arr = board_get_board_arr(b);
+
+	if(
+		king_c == WHITE
+		&&
+		attempting_left_castle
+		&&
+		(board_arr[7][1] || board_arr[7][2])
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else if(
+		king_c == WHITE
+		&&
+		attempting_right_castle
+		&&
+		(board_arr[7][4] || board_arr[7][5] || board_arr[7][6])
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else if(
+		king_c == BLACK
+		&&
+		attempting_left_castle
+		&&
+		(board_arr[0][1] || board_arr[0][2])
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else if(
+		king_c == BLACK
+		&&
+		attempting_right_castle
+		&&
+		(board_arr[0][4] || board_arr[0][5] || board_arr[0][6])
+	){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else{
+		return false;
+	}
+}
+
+static bool check_castle_king_in_check(const Board b, enum PieceColor king_c)
+{
+	const char *FUNC_NAME = "static bool check_castle_king_in_check(\
+const Board b, enum PieceColor king_c)";
+
+	if(check(b, king_c)){
+		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
+			FUNC_NAME);
+		return true;
+
+	}else{
+		return false;
+	}
+}
+
+static bool check_castle_through_check(const Board b, enum PieceColor king_c,
+	bool attempting_left_castle, bool attempting_right_castle)
+{
+	const char *FUNC_NAME = "static bool check_castle_through_check(\
+const Board b, enum PieceColor king_c, bool attempting_left_castle, \
+bool attempting_right_castle)";
+
+	if(
+		king_c == WHITE
+		&&
+		attempting_left_castle
+	){
+		Board b_cpy = board_create_copy(b);
+		board_move_piece(b_cpy, 7, 3, 7, 2);
+		if(check(b_cpy, king_c)){
+			board_destroy(&b_cpy);
+			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
+				FILE_NAME, FUNC_NAME);
+			return true;
+		}else{
+			board_destroy(&b_cpy);
+			return false;
+		}
+
+	}else if(
+		king_c == WHITE
+		&&
+		attempting_right_castle
+	){
+		Board b_cpy = board_create_copy(b);
+		board_move_piece(b_cpy, 7, 3, 7, 4);
+		if(check(b_cpy, king_c)){
+			board_destroy(&b_cpy);
+			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
+				FILE_NAME, FUNC_NAME);
+			return true;
+		}else{
+			board_destroy(&b_cpy);
+			return false;
+		}
+
+	}else if(
+		king_c == BLACK
+		&&
+		attempting_left_castle
+	){
+		Board b_cpy = board_create_copy(b);
+		board_move_piece(b_cpy, 0, 3, 0, 2);
+		if(check(b_cpy, king_c)){
+			board_destroy(&b_cpy);
+			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
+				FILE_NAME, FUNC_NAME);
+			return true;
+		}else{
+			board_destroy(&b_cpy);
+			return false;
+		}
+
+	}else if(
+		king_c == BLACK
+		&&
+		attempting_right_castle
+	){
+		Board b_cpy = board_create_copy(b);
+		board_move_piece(b_cpy, 0, 3, 0, 4);
+		if(check(b_cpy, king_c)){
+			board_destroy(&b_cpy);
+			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
+				FILE_NAME, FUNC_NAME);
+			return true;
+		}else{
+			board_destroy(&b_cpy);
+			return false;
+		}
+	}
+
+	//should never reach here, exists to satisify -Wreturn-type
+	return true;
+}
+
 ErrFncPtr gl_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
 	const char *FUNC_NAME = "ErrFncPtr gl_set_err_hndl(\
@@ -740,6 +1031,8 @@ enum ErrorCode error_type, ErrFncPtr err_hndl)";
 		error_type != PIECE_MOVE_COLLISION
 		||
 		error_type != INVALID_ENUM_PARAM
+		||
+		error_type != PIECE_MOVE_ILLEGAL_CASTLE
 	)){
 		call_error(err_fnc_arr, INVALID_ENUM_PARAM, FILE_NAME,
 			FUNC_NAME);
