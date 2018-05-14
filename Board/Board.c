@@ -14,6 +14,7 @@ struct BoardStruct{
 	Piece *w_capture_list;
 	Piece *b_capture_list;
 	bool *unmoved_pieces;
+	Piece en_passant_pawn;
 };
 
 Board board_create(void)
@@ -55,6 +56,7 @@ Board board_create(void)
 
 	b->b_capture_list = NULL;
 	b->w_capture_list = NULL;
+	b->en_passant_pawn = NULL;
 
 	return b;
 }
@@ -89,6 +91,12 @@ Board board_create_copy(const Board b)
 	}
 	for(uint_fast8_t i = 0; i < UNMOVED_PIECES_COUNT; i++)
 		new_b->unmoved_pieces[i] = b->unmoved_pieces[i];
+
+	if(b->en_passant_pawn){
+		uint_fast8_t epp_r = piece_get_r(b->en_passant_pawn);
+		uint_fast8_t epp_c = piece_get_c(b->en_passant_pawn);
+		new_b->en_passant_pawn= new_b->board_arr[epp_r][epp_c];
+	}
 
 	return new_b;
 }
@@ -237,21 +245,25 @@ uint_fast8_t c_new)";
 
 	if(r_old == 7 && c_old == 0 && !board_has_piece_moved(b, W_L_ROOK))
 		board_set_piece_moved(b, W_L_ROOK, true);
-
 	if(r_old == 7 && c_old == 7 && !board_has_piece_moved(b, W_R_ROOK))
 		board_set_piece_moved(b, W_R_ROOK, true);
-
 	if(r_old == 7 && c_old == 3 && !board_has_piece_moved(b, W_KING))
 		board_set_piece_moved(b, W_KING, true);
-
 	if(r_old == 0 && c_old == 0 && !board_has_piece_moved(b, B_L_ROOK))
 		board_set_piece_moved(b, B_L_ROOK, true);
-
 	if(r_old == 0 && c_old == 7 && !board_has_piece_moved(b, B_R_ROOK))
 		board_set_piece_moved(b, B_R_ROOK, true);
-
 	if(r_old == 0 && c_old == 3 && !board_has_piece_moved(b, B_KING))
 		board_set_piece_moved(b, B_KING, true);
+
+	if(
+		piece_get_type(b->board_arr[r_new][c_new]) == PAWN
+		&&
+		(r_new - r_old == 2 || r_new - r_old == -2)
+	)
+		board_set_en_passant_pawn(b, b->board_arr[r_new][c_new]);
+	else
+		board_set_en_passant_pawn(b, NULL);
 }
 
 Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c)
@@ -464,6 +476,37 @@ Piece **board_get_board_arr(const Board b)
 	return b->board_arr;
 }
 
+void board_set_en_passant_pawn(Board b, const Piece p)
+{
+	const char *FUNC_NAME = "void board_set_en_passant_pawn(Board b, \
+const Piece p)";
+
+	if(!b){
+		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
+		return ;
+	}
+
+	if(p && piece_get_type(p) != PAWN){
+		call_error(err_fnc_arr, BOARD_INVALID_EN_PASSANT_PIECE,
+			FILE_NAME, FUNC_NAME);
+		return ;
+	}
+
+	b->en_passant_pawn = p;
+}
+
+Piece board_get_en_passant_pawn(const Board b)
+{
+	const char *FUNC_NAME = "void board_set_en_passant_pawn(Board b)";
+
+	if(!b){
+		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
+		return NULL;
+	}
+
+	return b->en_passant_pawn;
+}
+
 ErrFncPtr board_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
 	const char *FUNC_NAME = "ErrFncPtr board_set_err_hndl("\
@@ -489,6 +532,8 @@ ErrFncPtr board_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 		error_type != PIECE_MOVE_SAME_POS
 		||
 		error_type != PIECE_MOVE_KING_CHECKED
+		||
+		BOARD_INVALID_EN_PASSANT_PIECE
 	)){
 		call_error(err_fnc_arr, INVALID_ENUM_PARAM, FILE_NAME,
 			FUNC_NAME);

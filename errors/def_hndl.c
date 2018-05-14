@@ -82,6 +82,12 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr,
 			"castling in the current board state is illegal\n");
 		break;
+	case BOARD_INVALID_EN_PASSANT_PIECE:
+		fprintf(stderr, "ERROR #%d (BOARD_INVALID_EN_PASSANT_PIECE)\n",
+			err);
+		fprintf(stderr,
+			"using en passant function with a non-pawn piece\n");
+		break;
 	default:
 		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
 	}
