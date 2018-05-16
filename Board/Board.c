@@ -229,6 +229,21 @@ uint_fast8_t c_new)";
 		}
 	}
 
+	if(piece_get_type(b->board_arr[r_old][c_old]) == PAWN){
+		if(check_en_passant(b, r_old, c_old, r_new, c_new)){
+			piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
+			b->board_arr[r_new][c_new] = b->board_arr[r_old][c_old];
+			b->board_arr[r_old][c_old] = NULL;
+
+			if(b->b_capture_list && b->w_capture_list)
+				board_remove_piece(b, r_old, c_new, false);
+			else
+				board_remove_piece(b, r_old, c_new, true);
+
+			return ;
+		}
+	}
+
 	if(!validate_move(b, r_old, c_old, r_new, c_new))
 		return ;
 

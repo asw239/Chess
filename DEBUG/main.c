@@ -33,10 +33,11 @@ void board_move_piece_castle(void);
 void board_move_piece_castle2(void);
 void board_move_piece_en_passant(void);
 void board_create_copy_en_passant(void);
+void gl_test_check_en_passant(void);
 
 int main(int argc, char *argv[])
 {
-	board_create_copy_en_passant();
+	gl_test_check_en_passant();
 	return 0;
 }
 
@@ -1348,4 +1349,64 @@ void board_create_copy_en_passant(void)
 	getchar();
 
 	board_destroy(&b_cpy);
+}
+
+void gl_test_check_en_passant(void)
+{
+	/*
+	 * validates functions check_en_passant_attempt and 
+	 * check_en_passant_pawn
+	 */
+
+	Board b = board_create();
+	board_init_capture_list(b);
+	board_set_piece_moved(b, W_L_ROOK, false);
+	board_set_piece_moved(b, W_R_ROOK, false);
+	board_set_piece_moved(b, W_KING, false);
+	board_set_piece_moved(b, B_L_ROOK, false);
+	board_set_piece_moved(b, B_R_ROOK, false);
+	board_set_piece_moved(b, B_KING, false);
+
+	Piece p;
+
+	p = piece_create();
+	piece_set_type(p, PAWN);
+	piece_set_color(p, WHITE);
+	board_link_piece(b, p, 6, 3);
+
+	p = piece_create();
+	piece_set_type(p, PAWN);
+	piece_set_color(p, BLACK);
+	board_link_piece(b, p, 1, 4);
+
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_move_piece(b, 6, 3, 4, 3);
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_move_piece(b, 4, 3, 3, 3);
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_move_piece(b, 1, 4, 3, 4);
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_move_piece(b, 3, 3, 2, 4);
+	for(int i = 0; i < 100; i++)
+		printf("\n");
+	print_board(b);
+	getchar();
+
+	board_destroy(&b);
 }
