@@ -30,6 +30,10 @@ static bool check_castle_pieces_inbetween(const Board b, enum PieceColor king_c,
 static bool check_castle_king_in_check(const Board b, enum PieceColor king_c);
 static bool check_castle_through_check(const Board b, enum PieceColor king_c,
 	bool attempting_left_castle, bool attempting_right_castle);
+static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
+	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new);
+static bool check_en_passant_pawn(const Board b, uint_fast8_t r_old,
+	uint_fast8_t c_new);
 
 static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
 static const char *FILE_NAME = "game_logic.c";
@@ -1006,6 +1010,63 @@ bool attempting_right_castle)";
 	return true;
 }
 
+bool check_en_passant(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+	uint_fast8_t r_new, uint_fast8_t c_new)
+{
+	if(!check_en_passant_attempt(b, r_old, c_old, r_new, c_new))
+		return false;
+
+	if(!check_en_passant_pawn(b, r_old, c_new))
+		return false;
+
+	return true;
+}
+
+static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
+	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
+{
+	if(
+		piece_get_color(board_get_board_arr(b)[r_old][c_old]) == WHITE
+		&&
+		r_old - r_new == 1
+		&&
+		(c_old - c_new == 1 || c_new - c_old == 1)
+	)
+		return true;
+
+	else if(
+		piece_get_color(board_get_board_arr(b)[r_old][c_old]) == BLACK
+		&&
+		r_new - r_old == 1
+		&&
+		(c_old - c_new == 1 || c_new - c_old == 1)
+	)
+		return true;
+
+	else
+		return false;
+}
+
+static bool check_en_passant_pawn(const Board b, uint_fast8_t r_old,
+	uint_fast8_t c_new)
+{
+	const char *FUNC_NAME = "static bool check_en_passant_pawn(\
+const Board b, uint_fast8_t r_old, uint_fast8_t c_new)";
+
+	if(
+		board_get_board_arr(b)[r_old][c_new]
+		==
+		board_get_en_passant_pawn(b)
+	){
+		return true;
+
+	}else{
+		call_error(err_fnc_arr, BOARD_INVALID_EN_PASSANT_PIECE,
+			FILE_NAME, FUNC_NAME);
+		return false;
+	}
+}
+
 ErrFncPtr gl_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
 	const char *FUNC_NAME = "ErrFncPtr gl_set_err_hndl(\
@@ -1033,6 +1094,8 @@ enum ErrorCode error_type, ErrFncPtr err_hndl)";
 		error_type != INVALID_ENUM_PARAM
 		||
 		error_type != PIECE_MOVE_ILLEGAL_CASTLE
+		||
+		error_type != BOARD_INVALID_EN_PASSANT_PIECE
 	)){
 		call_error(err_fnc_arr, INVALID_ENUM_PARAM, FILE_NAME,
 			FUNC_NAME);

@@ -52,6 +52,10 @@ bool board_has_piece_moved(const Board b, enum UnmovedPieces p);
 
 Piece **board_get_board_arr(const Board b);
 
+void board_set_en_passant_pawn(Board b, const Piece p);
+
+Piece board_get_en_passant_pawn(const Board b);
+
 ErrFncPtr board_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl);
 
 #endif
