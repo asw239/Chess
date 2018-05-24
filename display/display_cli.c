@@ -3,10 +3,16 @@
 #include <wchar.h>
 #include <locale.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
 #define QUADRANT_SIZE 3
 #define OFFSET 6		// multiples of 3
 #define CAPTURE_LIST_PADDING 1
+
+#define FLUSH_EXCESS_INPUT() {\
+	for(char c = getchar(); c != '\n' && c != EOF; c = getchar()) ;\
+}
 
 static void padding_vert(void);
 static void padding_hori(void);
@@ -14,7 +20,11 @@ static void div_hori(void);
 static void letters(void);
 static void div_vert(uint_fast8_t row, const Board b);
 static void print_piece(const Piece p);
-static void print_capture_list(Board b, enum PieceColor c);
+static void print_capture_list(const Board b, enum PieceColor c);
+static void print_turn(const Board b);
+static void print_menu_board_top_bottom(uint_fast8_t menu_width);
+static void print_menu_board_left_right(uint_fast8_t menu_width, char *msg);
+void pause(void);
 
 static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
 static const char *FILE_NAME = "display_cli.c";
@@ -57,6 +67,12 @@ void init_display(void)
 	//sets the locale to the locale of the execution environment
 }
 
+void clear_screen(void)
+{
+	for(uint_fast16_t i = 0; i < 300; i++)
+		putchar('\n');
+}
+
 void print_board(const Board b)
 {
 	const char *FUNC_NAME = "void print_board(const Board b)";
@@ -92,6 +108,8 @@ void print_board(const Board b)
 		print_capture_list(b, WHITE);
 		printf("\n");
 	}
+
+	print_turn(b);
 }
 
 static void padding_vert(void)
@@ -189,7 +207,7 @@ static void print_piece(const Piece p)
 		printf("%lc", a_b_pawn);
 }
 
-static void print_capture_list(Board b, enum PieceColor c)
+static void print_capture_list(const Board b, enum PieceColor c)
 {
 	padding_hori();
 	uint_fast8_t printed_board_size =
@@ -220,6 +238,219 @@ static void print_capture_list(Board b, enum PieceColor c)
 	}
 }
 
+static void print_turn(const Board b)
+{
+	putchar('\n');
+	padding_hori();
+
+	uint_fast8_t printed_board_size =
+		(QUADRANT_SIZE + 1) * BOARD_SIZE + 5;
+	const char *w_msg = "*WHITE'S TURN*";
+	const char *b_msg = "*BLACK'S TURN*";
+	uint_fast8_t msg_length = 14;
+
+	for(uint_fast8_t i = 0; i < (printed_board_size - msg_length) / 2; i++)
+		putchar(' ');
+
+	board_get_turn(b) == WHITE ?
+		printf("%s\n", w_msg) :
+		printf("%s\n", b_msg);
+}
+
+void print_menu(uint_fast8_t menu_width, uint_fast8_t menu_height)
+{
+	char *pvp = "(P) Player Vs. Player (P)";
+	char *pve = "(E) Player Vs. A.I. (E)";
+	char *eve = "(A) A.I. Vs. A.I. (A)";
+	char *exit = "(X) Exit (X)";
+	uint_fast8_t option_count = 4 + 1;
+	uint_fast8_t grtst_msg_lgth = strlen(pvp);
+
+	const char *FUNC_NAME = "void print_menu(uint_fast8_t menu_width, \
+uint_fast8_t menu_height)";
+
+	if(menu_width < grtst_msg_lgth + 2){
+		call_error(err_fnc_arr, DISPLAY_WIDTH_SMALL, FILE_NAME,
+			FUNC_NAME);
+		return ;
+	}
+	if(menu_height < option_count + 2){
+		call_error(err_fnc_arr, DISPLAY_HEIGHT_SMALL, FILE_NAME,
+			FUNC_NAME);
+		return ;
+	}
+
+	print_menu_board_top_bottom(menu_width);
+
+	uint_fast8_t space_height = (menu_height - 2 - option_count) / 2 ;
+	for(uint_fast8_t i = 0; i < space_height; i++)
+		print_menu_board_left_right(menu_width, NULL);
+
+	print_menu_board_left_right(menu_width, NULL);
+	print_menu_board_left_right(menu_width, NULL);
+	print_menu_board_left_right(menu_width, NULL);
+
+	print_menu_board_left_right(menu_width, pvp);
+	print_menu_board_left_right(menu_width, pve);
+	print_menu_board_left_right(menu_width, eve);
+	print_menu_board_left_right(menu_width, NULL);
+	print_menu_board_left_right(menu_width, exit);
+
+	for(uint_fast8_t i = 0; i < space_height; i++)
+		print_menu_board_left_right(menu_width, NULL);
+
+	print_menu_board_top_bottom(menu_width);
+}
+
+static void print_menu_board_top_bottom(uint_fast8_t menu_width)
+{
+	for(uint_fast8_t i = 0; i < menu_width; i++)
+		putchar('*');
+	putchar('\n');
+}
+
+static void print_menu_board_left_right(uint_fast8_t menu_width, char *msg)
+{
+	if(!msg){
+		putchar('*');
+		for(uint_fast8_t i = 0; i < menu_width - 2; i++)
+			putchar(' ');
+		printf("*\n");
+
+	}else{
+		uint_fast8_t msg_length = strlen(msg);
+		uint_fast8_t space_length = (menu_width - 2 - msg_length) / 2 ;
+		uint_fast8_t offset =
+			((menu_width - 2 - msg_length) % 2) ? 1 : 0;
+
+		putchar('*');
+		for(uint_fast8_t i = 0; i < space_length; i++)
+			putchar(' ');
+		printf("%s", msg);
+		for(uint_fast8_t i = 0; i < space_length + offset; i++)
+			putchar(' ');
+		printf("*\n");
+	}
+}
+
+char capture_menu(void)
+{
+	const char *FUNC_NAME = "char capture_menu(void)";
+
+	terminate_on_def_err = false;
+
+	printf("\nEnter menu selection: ");
+
+	char option;
+	if(scanf(" %c", &option) != 1){
+		FLUSH_EXCESS_INPUT();
+		call_error(err_fnc_arr, CAPTURE_MENU_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return '\0';
+	}
+	FLUSH_EXCESS_INPUT();
+
+	switch(option){
+	case 'P':
+	case 'E':
+	case 'A':
+	case 'X':
+		terminate_on_def_err = true;
+		return toupper(option);
+	case 'p':
+	case 'e':
+	case 'a':
+	case 'x':
+		terminate_on_def_err = true;
+		return option;
+	default:
+		FLUSH_EXCESS_INPUT();
+		call_error(err_fnc_arr, CAPTURE_MENU_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return '\0';
+	}
+}
+
+void pause(void)
+{
+	printf("\nPress any key to continue: ");
+	FLUSH_EXCESS_INPUT();
+}
+
+bool capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old, uint_fast8_t *r_new,
+	uint_fast8_t *c_new)
+{
+	const char *FUNC_NAME = "bool capture_move(\
+uint_fast8_t *r_old, uint_fast8_t *c_old, uint_fast8_t *r_new, \
+uint_fast8_t *c_new)";
+
+	terminate_on_def_err = false;
+
+	printf("\nEnter source destination: ");
+
+	char cr_old, cc_old, space, cr_new, cc_new;
+	if(scanf(" %c%c%c%c%c", &cr_old,&cc_old,&space,&cr_new,&cc_new) != 5){
+		FLUSH_EXCESS_INPUT();
+		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return false;
+	}
+	FLUSH_EXCESS_INPUT();
+
+	if(cr_old >= '1' && cr_old <= '8'){
+		*r_old = cr_old - '1';
+	}else{
+		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return false;
+	}
+
+	if(cc_old >= 'a' && cc_old <= 'h'){
+		*c_old = cc_old - 'a';
+	}else if(cc_old >= 'A' && cc_old <= 'H'){
+		*c_old = cc_old - 'A';
+	}else{
+		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return false;
+	}
+
+	if(space != ' '){
+		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return false;
+	}
+
+	if(cr_new >= '1' && cr_new <= '8'){
+		*r_new = cr_new - '1';
+	}else{
+		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return false;
+	}
+
+	if(cc_new >= 'a' && cc_new <= 'h'){
+		*c_new = cc_new - 'a';
+	}else if(cc_old >= 'A' && cc_old <= 'H'){
+		*c_new = cc_new - 'A';
+	}else{
+		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+			FUNC_NAME);
+		pause();
+		return false;
+	}
+
+	terminate_on_def_err = true;
+	return true;
+}
+
 ErrFncPtr display_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
 	const char *FUNC_NAME = "ErrFncPtr display_set_err_hndl(\
@@ -229,6 +460,14 @@ enum ErrorCode error_type, ErrFncPtr err_hndl)";
 		error_type != GLOBAL_ERROR
 		||
 		error_type != NULL_PARAM
+		||
+		error_type != DISPLAY_WIDTH_SMALL
+		||
+		error_type != DISPLAY_HEIGHT_SMALL
+		||
+		error_type != CAPTURE_MENU_BAD_INP
+		||
+		error_type != CAPTURE_MOVE_BAD_INP
 	)){
 		call_error(err_fnc_arr, INVALID_ENUM_PARAM, FILE_NAME,
 			FUNC_NAME);

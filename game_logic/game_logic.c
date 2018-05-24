@@ -42,6 +42,7 @@ Board generate_start_board(void)
 {
 	Board b = board_create();
 	board_set_turn(b, WHITE);
+	board_init_capture_list(b);
 
 	board_set_piece_moved(b, W_L_ROOK, false);
 	board_set_piece_moved(b, W_R_ROOK, false);
@@ -1031,6 +1032,8 @@ static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 		r_old - r_new == 1
 		&&
 		(c_old - c_new == 1 || c_new - c_old == 1)
+		&&
+		!board_get_board_arr(b)[r_new][c_new]
 	)
 		return true;
 
@@ -1040,6 +1043,8 @@ static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 		r_new - r_old == 1
 		&&
 		(c_old - c_new == 1 || c_new - c_old == 1)
+		&&
+		!board_get_board_arr(b)[r_new][c_new]
 	)
 		return true;
 
