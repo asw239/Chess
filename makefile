@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -Wfloat-equal -Wpointer-arith -Wcast-align -Wstrict-prototypes
 
-all : errors/def_hndl.o errors/error_utilities.o Piece/Piece.o Board/Board.o game_logic/game_logic.o display/display_cli.o
+all : errors/def_hndl.o errors/error_utilities.o Piece/Piece.o Board/Board.o game_logic/game_logic.o display/display_cli.o game_mode/menu.o game_mode/player_vs_player.o
 
 errors/def_hndl.o : errors/def_hndl.c
 	$(CC) $(CFLAGS) -c -o errors/def_hndl.o errors/def_hndl.c
@@ -21,5 +21,11 @@ game_logic/game_logic.o : game_logic/game_logic.c
 display/display_cli.o : display/display_cli.c
 	$(CC) $(CFLAGS) -c -o display/display_cli.o display/display_cli.c
 
+game_mode/menu.o : game_mode/menu.c
+	$(CC) $(CFLAGS) -c -o game_mode/menu.o game_mode/menu.c
+
+game_mode/player_vs_player.o : game_mode/player_vs_player.c
+	$(CC) $(CFLAGS) -c -o game_mode/player_vs_player.o game_mode/player_vs_player.c
+
 clean :
-	rm errors/def_hndl.o errors/error_utilities.o Piece/Piece.o Board/Board.o game_logic/game_logic.o display/display_cli.o
+	rm errors/def_hndl.o errors/error_utilities.o Piece/Piece.o Board/Board.o game_logic/game_logic.o display/display_cli.o game_mode/menu.o game_mode/player_vs_player.o

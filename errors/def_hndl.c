@@ -1,9 +1,8 @@
-#ifndef DEF_HNDL_H
-#define DEF_HDNL_H
-
 #include "def_hndl.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+bool terminate_on_def_err = true;
 
 void def_hndl(enum ErrorCode err, const char *msg)
 {
@@ -82,16 +81,44 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr,
 			"castling in the current board state is illegal\n");
 		break;
+	case PIECE_MOVE_UNEXPECTED_COLOR:
+		fprintf(stderr, "ERROR #%d (PIECE_MOVE_UNEXPECTED_COLOR)\n",
+			err);
+		fprintf(stderr,
+			"attempting to move piece of opposing expected color\n");
+		break;
 	case BOARD_INVALID_EN_PASSANT_PIECE:
 		fprintf(stderr, "ERROR #%d (BOARD_INVALID_EN_PASSANT_PIECE)\n",
 			err);
 		fprintf(stderr,
-			"using en passant function with a non-pawn piece\n");
+			"cannot en-passant capture on non-skip pawns\n");
+		break;
+	case DISPLAY_WIDTH_SMALL:
+		fprintf(stderr, "ERROR #%d (DISPLAY_WIDTH_SMALL)\n", err);
+		fprintf(stderr,
+			"width parameter too small for proper display\n");
+		break;
+	case DISPLAY_HEIGHT_SMALL:
+		fprintf(stderr, "ERROR #%d (DISPLAY_HEIGHT_SMALL)\n", err);
+		fprintf(stderr,
+			"height parameter too small for proper display\n");
+		break;
+	case CAPTURE_MENU_BAD_INP:
+		fprintf(stderr, "ERROR #%d (CAPTURE_MENU_BAD_INP)\n", err);
+		fprintf(stderr,
+			"input not part of menu options\n");
+		break;
+	case CAPTURE_MOVE_BAD_INP:
+		fprintf(stderr, "ERROR #%d (CAPTURE_MOVE_BAD_INP)\n", err);
+		fprintf(stderr,
+			"invalid input format for capture_move\n");
+		fprintf(stderr,
+			"Expected format: [rc rc] where r 1-8 and c A-H\n");
 		break;
 	default:
 		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
 	}
-	exit(err);
-}
 
-#endif
+	if(terminate_on_def_err)
+		exit(err);
+}

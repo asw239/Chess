@@ -196,6 +196,12 @@ uint_fast8_t c_new)";
 		return ;
 	}
 
+	if(*b->turn != piece_get_color(b->board_arr[r_old][c_old])){
+		call_error(err_fnc_arr, PIECE_MOVE_UNEXPECTED_COLOR, FILE_NAME,
+			FUNC_NAME);
+		return ;
+	}
+
 	if(piece_get_type(b->board_arr[r_old][c_old]) == KING){
 		if(check_castle(b, r_old, c_old, c_new)){
 			piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
@@ -547,6 +553,8 @@ ErrFncPtr board_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 		error_type != PIECE_MOVE_SAME_POS
 		||
 		error_type != PIECE_MOVE_KING_CHECKED
+		||
+		error_type != PIECE_MOVE_UNEXPECTED_COLOR
 		||
 		BOARD_INVALID_EN_PASSANT_PIECE
 	)){
