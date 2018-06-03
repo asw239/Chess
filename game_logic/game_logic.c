@@ -25,11 +25,14 @@ static bool check_castle_attempt(uint_fast8_t c_old, uint_fast8_t c_new,
 static bool check_castle_king_moved(Board b, enum PieceColor king_c);
 static bool check_castle_rook_moved(const Board b, enum PieceColor king_c,
 	bool attempting_left_castle, bool attempting_right_castle);
-static bool check_castle_pieces_inbetween(const Board b, enum PieceColor king_c,
-	bool attempting_left_castle, bool attempting_right_castle);
-static bool check_castle_king_in_check(const Board b, enum PieceColor king_c);
-static bool check_castle_through_check(const Board b, enum PieceColor king_c,
-	bool attempting_left_castle, bool attempting_right_castle);
+static bool check_castle_pieces_inbetween(const Board b,
+	enum PieceColor king_c, bool attempting_left_castle,
+	bool attempting_right_castle);
+static bool check_castle_king_in_check(const Board b,
+	enum PieceColor king_c);
+static bool check_castle_through_check(const Board b,
+	enum PieceColor king_c, bool attempting_left_castle,
+	bool attempting_right_castle);
 static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new);
 static bool check_en_passant_pawn(const Board b, uint_fast8_t r_old,
@@ -139,9 +142,9 @@ Board generate_start_board(void)
 bool validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	static const char *FUNC_NAME = "bool validate_move(const Board b, \
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
-uint_fast8_t c_new)";
+	static const char *FUNC_NAME =
+"bool validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old, \
+uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -201,9 +204,9 @@ uint_fast8_t c_new)";
 static bool check_move_king(uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static bool check_move_king(\
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
-uint_fast8_t c_new)";
+	const char *FUNC_NAME =
+"static bool check_move_king(uint_fast8_t r_old, uint_fast8_t c_old, \
+uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	if(
 		r_old - 1 > r_new || r_old + 1 < r_new
@@ -222,9 +225,10 @@ static bool check_move_rook(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new,
 	bool check_queen, bool *in_range, bool *collision)
 {
-	const char *FUNC_NAME = "static bool check_move_rook(const Board b, \
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
-uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
+	const char *FUNC_NAME =
+"static bool check_move_rook(const Board b, uint_fast8_t r_old, \
+uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new, \
+bool check_queen, bool *in_range, bool *collision)";
 
 	if(check_queen){
 		*in_range = true;
@@ -300,9 +304,10 @@ static bool check_move_bishop(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new,
 	bool check_queen, bool *in_range, bool *collision)
 {
-	const char *FUNC_NAME = "static bool check_move_bishop(const Board b, \
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
-uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
+	const char *FUNC_NAME =
+"static bool check_move_bishop(const Board b, uint_fast8_t r_old, \
+uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new, \
+bool check_queen, bool *in_range, bool *collision)";
 
 	if(check_queen){
 		*in_range = true;
@@ -408,9 +413,9 @@ uint_fast8_t c_new, bool check_queen, bool *in_range, bool *collision)";
 static bool check_move_queen(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static bool check_move_queen(const Board b, \
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
-uint_fast8_t c_new)";
+	const char *FUNC_NAME =
+"static bool check_move_queen(const Board b, uint_fast8_t r_old, \
+uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	bool bishop_in_range;
 	bool bishop_collision;
@@ -437,9 +442,9 @@ uint_fast8_t c_new)";
 static bool check_move_knight(uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static bool check_move_knight(\
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
-uint_fast8_t c_new)";
+	const char *FUNC_NAME =
+"static bool check_move_knight(uint_fast8_t r_old, uint_fast8_t c_old, \
+uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	if(!(
 		(r_new - r_old == 2 && c_new - c_old == 1)
@@ -468,9 +473,9 @@ uint_fast8_t c_new)";
 static bool check_move_pawn(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static bool check_move_pawn(const Board b, \
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fast8_t r_new, \
-uint_fast8_t c_new)";
+	const char *FUNC_NAME =
+"static bool check_move_pawn(const Board b, uint_fast8_t r_old, \
+uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	//black forward
 	if(
@@ -573,7 +578,8 @@ uint_fast8_t c_new)";
 
 bool check(const Board b, enum PieceColor c)
 {
-	const char *FUNC_NAME = "bool check(const Board b, enum PieceColor c)";
+	const char *FUNC_NAME =
+"bool check(const Board b, enum PieceColor c)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -646,7 +652,8 @@ static void null_func(enum ErrorCode err, const char *msg)
 
 bool mate(const Board b, enum PieceColor c)
 {
-	const char *FUNC_NAME = "bool mate(const Board b, enum PieceColor c)";
+	const char *FUNC_NAME =
+"bool mate(const Board b, enum PieceColor c)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -784,8 +791,8 @@ static bool check_castle_attempt(uint_fast8_t c_old, uint_fast8_t c_new,
 
 static bool check_castle_king_moved(const Board b, enum PieceColor king_c)
 {
-	const char *FUNC_NAME = "static bool check_castle_king_moved(\
-const Board b, enum PieceColor king_c)";
+	const char *FUNC_NAME =
+"static bool check_castle_king_moved(const Board b, enum PieceColor king_c)";
 
 	if(king_c == WHITE && board_has_piece_moved(b, W_KING)){
 		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
@@ -805,9 +812,9 @@ const Board b, enum PieceColor king_c)";
 static bool check_castle_rook_moved(const Board b, enum PieceColor king_c,
 	bool attempting_left_castle, bool attempting_right_castle)
 {
-	const char *FUNC_NAME = "static bool check_castle_rook_moved(\
-const Board b, enum PieceColor king_c, bool attempting_left_castle, \
-bool attempting_right_castle)";
+	const char *FUNC_NAME =
+"static bool check_castle_rook_moved(const Board b, enum PieceColor king_c, \
+bool attempting_left_castle, bool attempting_right_castle)";
 
 	if(
 		king_c == WHITE
@@ -858,11 +865,13 @@ bool attempting_right_castle)";
 	}
 }
 
-static bool check_castle_pieces_inbetween(const Board b, enum PieceColor king_c,
-	bool attempting_left_castle, bool attempting_right_castle)
+static bool check_castle_pieces_inbetween(const Board b,
+	enum PieceColor king_c, bool attempting_left_castle,
+	bool attempting_right_castle)
 {
-	const char *FUNC_NAME = "static bool check_castle_pieces_inbetween(\
-const Board b, enum PieceColor king_c, bool attempting_left_castle, \
+	const char *FUNC_NAME =
+"static bool check_castle_pieces_inbetween(const Board b, \
+enum PieceColor king_c, bool attempting_left_castle, \
 bool attempting_right_castle)";
 
 	Piece **board_arr = board_get_board_arr(b);
@@ -916,10 +925,12 @@ bool attempting_right_castle)";
 	}
 }
 
-static bool check_castle_king_in_check(const Board b, enum PieceColor king_c)
+static bool check_castle_king_in_check(const Board b,
+	enum PieceColor king_c)
 {
-	const char *FUNC_NAME = "static bool check_castle_king_in_check(\
-const Board b, enum PieceColor king_c)";
+	const char *FUNC_NAME =
+"static bool check_castle_king_in_check(const Board b, \
+enum PieceColor king_c)";
 
 	if(check(b, king_c)){
 		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
@@ -931,11 +942,13 @@ const Board b, enum PieceColor king_c)";
 	}
 }
 
-static bool check_castle_through_check(const Board b, enum PieceColor king_c,
-	bool attempting_left_castle, bool attempting_right_castle)
+static bool check_castle_through_check(const Board b,
+	enum PieceColor king_c, bool attempting_left_castle,
+	bool attempting_right_castle)
 {
-	const char *FUNC_NAME = "static bool check_castle_through_check(\
-const Board b, enum PieceColor king_c, bool attempting_left_castle, \
+	const char *FUNC_NAME =
+"static bool check_castle_through_check(const Board b, \
+enum PieceColor king_c, bool attempting_left_castle, \
 bool attempting_right_castle)";
 
 	if(
@@ -1055,8 +1068,9 @@ static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 static bool check_en_passant_pawn(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "static bool check_en_passant_pawn(\
-const Board b, uint_fast8_t r_old, uint_fast8_t c_new)";
+	const char *FUNC_NAME =
+"static bool check_en_passant_pawn(const Board b, uint_fast8_t r_old, \
+uint_fast8_t c_new)";
 
 	if(
 		board_get_board_arr(b)[r_old][c_new]
@@ -1074,8 +1088,8 @@ const Board b, uint_fast8_t r_old, uint_fast8_t c_new)";
 
 ErrFncPtr gl_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
-	const char *FUNC_NAME = "ErrFncPtr gl_set_err_hndl(\
-enum ErrorCode error_type, ErrFncPtr err_hndl)";
+	const char *FUNC_NAME =
+"ErrFncPtr gl_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)";
 
 	if(!(
 		error_type != GLOBAL_ERROR

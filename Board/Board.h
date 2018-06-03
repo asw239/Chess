@@ -40,7 +40,8 @@ void board_flip_turn(Board b);
 
 enum PieceColor board_get_turn(const Board b);
 
-Piece board_remove_piece(Board b, uint_fast8_t r, uint_fast8_t c, bool destroy);
+Piece board_remove_piece(Board b, uint_fast8_t r, uint_fast8_t c,
+	bool destroy);
 
 void board_init_capture_list(Board b);
 
