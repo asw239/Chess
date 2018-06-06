@@ -6,7 +6,8 @@
 
 static const char *FILE_NAME = "Board.c";
 const uint_fast8_t BOARD_SIZE = 8;
-static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
+static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] =
+	errors_def_hndl};
 
 struct BoardStruct{
 	Piece **board_arr;
@@ -206,7 +207,7 @@ uint_fast8_t r_new, uint_fast8_t c_new)";
 	}
 
 	if(piece_get_type(b->board_arr[r_old][c_old]) == KING){
-		if(check_castle(b, r_old, c_old, c_new)){
+		if(gl_check_castle(b, r_old, c_old, c_new)){
 			piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
 			b->board_arr[r_new][c_new] = b->board_arr[r_old][c_old];
 			b->board_arr[r_old][c_old] = NULL;
@@ -239,7 +240,7 @@ uint_fast8_t r_new, uint_fast8_t c_new)";
 	}
 
 	if(piece_get_type(b->board_arr[r_old][c_old]) == PAWN){
-		if(check_en_passant(b, r_old, c_old, r_new, c_new)){
+		if(gl_check_en_passant(b, r_old, c_old, r_new, c_new)){
 			piece_set_pos(b->board_arr[r_old][c_old], r_new, c_new);
 			b->board_arr[r_new][c_new] = b->board_arr[r_old][c_old];
 			b->board_arr[r_old][c_old] = NULL;
@@ -253,7 +254,7 @@ uint_fast8_t r_new, uint_fast8_t c_new)";
 		}
 	}
 
-	if(!validate_move(b, r_old, c_old, r_new, c_new))
+	if(!gl_validate_move(b, r_old, c_old, r_new, c_new))
 		return ;
 
 	if(b->board_arr[r_new][c_new]){
