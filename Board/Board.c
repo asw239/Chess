@@ -19,7 +19,8 @@ struct BoardStruct{
 
 Board board_create(void)
 {
-	const char *FUNC_NAME = "Board board_create(void)";
+	const char *FUNC_NAME =
+"Board board_create(void)";
 
 	Board b;
 	b = malloc(sizeof(*b));
@@ -63,7 +64,8 @@ Board board_create(void)
 
 Board board_create_copy(const Board b)
 {
-	const char *FUNC_NAME = "Board board_create_copy(const Board b)";
+	const char *FUNC_NAME =
+"Board board_create_copy(const Board b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -103,7 +105,8 @@ Board board_create_copy(const Board b)
 
 void board_destroy(Board *b)
 {
-	const char *FUNC_NAME = "void board_destroy(Board *b)";
+	const char *FUNC_NAME =
+"void board_destroy(Board *b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -141,8 +144,8 @@ void board_destroy(Board *b)
 
 void board_link_piece(Board b, Piece p, uint_fast8_t r, uint_fast8_t c)
 {
-	const char *FUNC_NAME = "void board_link_piece(Board b, Piece p, \
-uint_fast8_t r, uint_fast8_t c)";
+	const char *FUNC_NAME =
+"void board_link_piece(Board b, Piece p, uint_fast8_t r, uint_fast8_t c)";
 
 	if(!b || !p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -168,9 +171,9 @@ uint_fast8_t r, uint_fast8_t c)";
 void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
-	const char *FUNC_NAME = "void board_move_piece(Board b, \
-uint_fast8_t r_old, uint_fast8_t c_old, uint_fas8t_t r_new, \
-uint_fast8_t c_new)";
+	const char *FUNC_NAME =
+"void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old, \
+uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -289,8 +292,8 @@ uint_fast8_t c_new)";
 
 Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c)
 {
-	const char *FUNC_NAME = "Piece board_get_piece(Board b, \
-uint_fast8_t r, uint_fast8_t c)";
+	const char *FUNC_NAME =
+"Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -308,8 +311,8 @@ uint_fast8_t r, uint_fast8_t c)";
 
 void board_set_turn(Board b, enum PieceColor c)
 {
-	const char *FUNC_NAME = "void board_set_turn(Board b, \
-enum PieceColor c)";
+	const char *FUNC_NAME =
+"void board_set_turn(Board b, enum PieceColor c)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -327,7 +330,8 @@ enum PieceColor c)";
 
 void board_flip_turn(Board b)
 {
-	const char *FUNC_NAME = "void board_flip_turn(Board b)";
+	const char *FUNC_NAME =
+"void board_flip_turn(Board b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -339,7 +343,8 @@ void board_flip_turn(Board b)
 
 enum PieceColor board_get_turn(const Board b)
 {
-	const char *FUNC_NAME = "enum PieceColor board_get_turn(const Board b)";
+	const char *FUNC_NAME =
+"enum PieceColor board_get_turn(const Board b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -349,10 +354,12 @@ enum PieceColor board_get_turn(const Board b)
 	return *(b->turn);
 }
 
-Piece board_remove_piece(Board b, uint_fast8_t r, uint_fast8_t c, bool destroy)
+Piece board_remove_piece(Board b, uint_fast8_t r, uint_fast8_t c,
+	bool destroy)
 {
-	const char *FUNC_NAME = "Piece board_remove_piece(Board b, \
-uint_fast8_t r, uint_fast8_t c, bool destroy)";
+	const char *FUNC_NAME =
+"Piece board_remove_piece(Board b, uint_fast8_t r, uint_fast8_t c, \
+bool destroy)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -407,7 +414,8 @@ uint_fast8_t r, uint_fast8_t c, bool destroy)";
 
 void board_init_capture_list(Board b)
 {
-	const char *FUNC_NAME = "void board_init_capture_list(Board b)";
+	const char *FUNC_NAME =
+"void board_init_capture_list(Board b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -429,8 +437,8 @@ void board_init_capture_list(Board b)
 
 Piece *board_get_capture_list(const Board b, enum PieceColor c)
 {
-	const char *FUNC_NAME = "Piece *board_get_capture_list(const Board b, \
-enum PieceColor c)";
+	const char *FUNC_NAME =
+"Piece *board_get_capture_list(const Board b, enum PieceColor c)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -448,8 +456,9 @@ enum PieceColor c)";
 
 void board_set_piece_moved(Board b, enum UnmovedPieces p, bool moved)
 {
-	const char *FUNC_NAME = "void board_set_piece_moved(Board b, \
-enum UnmovedPieces p, bool moved)";
+	const char *FUNC_NAME =
+"void board_set_piece_moved(Board b, enum UnmovedPieces p, bool moved)";
+
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
 		return ;
@@ -467,8 +476,8 @@ enum UnmovedPieces p, bool moved)";
 
 bool board_has_piece_moved(const Board b, enum UnmovedPieces p)
 {
-	const char *FUNC_NAME = "bool board_has_piece_moved(const Board b, \
-enum UnmovedPieces p)";
+	const char *FUNC_NAME =
+"bool board_has_piece_moved(const Board b, enum UnmovedPieces p)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -487,7 +496,8 @@ enum UnmovedPieces p)";
 
 Piece **board_get_board_arr(const Board b)
 {
-	const char *FUNC_NAME = "Piece **board_get_board_arr(const Board b)";
+	const char *FUNC_NAME =
+"Piece **board_get_board_arr(const Board b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -499,8 +509,8 @@ Piece **board_get_board_arr(const Board b)
 
 void board_set_en_passant_pawn(Board b, const Piece p)
 {
-	const char *FUNC_NAME = "void board_set_en_passant_pawn(Board b, \
-const Piece p)";
+	const char *FUNC_NAME =
+"void board_set_en_passant_pawn(Board b, const Piece p)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -518,7 +528,8 @@ const Piece p)";
 
 Piece board_get_en_passant_pawn(const Board b)
 {
-	const char *FUNC_NAME = "void board_set_en_passant_pawn(Board b)";
+	const char *FUNC_NAME =
+"Piece board_get_en_passant_pawn(const Board b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -530,8 +541,8 @@ Piece board_get_en_passant_pawn(const Board b)
 
 ErrFncPtr board_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
-	const char *FUNC_NAME = "ErrFncPtr board_set_err_hndl("\
-"enum ErrorCode error_type, ErrFncPtr err_hndl)";
+	const char *FUNC_NAME =
+"ErrFncPtr board_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)";
 
 	if(!(
 		error_type != MEM_FAIL

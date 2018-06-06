@@ -18,7 +18,8 @@ static const char *FILE_NAME = "Piece.c";
 
 Piece piece_create(void)
 {
-	const char *FUNC_NAME = "Piece piece_create(void)";
+	const char *FUNC_NAME =
+"Piece piece_create(void)";
 
 	Piece p;
 	p = malloc(sizeof(*p));
@@ -56,7 +57,8 @@ Piece piece_create(void)
 
 Piece piece_create_copy(const Piece p)
 {
-	const char *FUNC_NAME = "Piece piece_create_copy(const Piece p)";
+	const char *FUNC_NAME =
+"Piece piece_create_copy(const Piece p)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -75,7 +77,8 @@ Piece piece_create_copy(const Piece p)
 
 void piece_destroy(Piece *p)
 {
-	const char *FUNC_NAME = "void piece_destroy(Piece *p)";
+	const char *FUNC_NAME =
+"void piece_destroy(Piece *p)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -93,8 +96,8 @@ void piece_destroy(Piece *p)
 
 void piece_set_type(Piece p, enum PieceType pt)
 {
-	const char *FUNC_NAME = "void piece_set_type(Piece p, \
-enum PieceType pt)";
+	const char *FUNC_NAME =
+"void piece_set_type(Piece p, enum PieceType pt)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -113,7 +116,8 @@ enum PieceType pt)";
 
 enum PieceType piece_get_type(const Piece p)
 {
-	const char *FUNC_NAME = "enum PieceType piece_get_type(const Piece p)";
+	const char *FUNC_NAME =
+"enum PieceType piece_get_type(const Piece p)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -125,8 +129,8 @@ enum PieceType piece_get_type(const Piece p)
 
 void piece_set_pos(Piece p, uint_fast8_t r, uint_fast8_t c)
 {
-	const char *FUNC_NAME = "void piece_set_pos(Piece p, uint_fast8_t r, \
-uint_fast8_t c)";
+	const char *FUNC_NAME =
+"void piece_set_pos(Piece p, uint_fast8_t r, uint_fast8_t c)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -145,7 +149,8 @@ uint_fast8_t c)";
 
 uint_fast8_t piece_get_r(const Piece p)
 {
-	const char *FUNC_NAME = "uint_fast8_t piece_get_r(const Piece p)";
+	const char *FUNC_NAME =
+"uint_fast8_t piece_get_r(const Piece p)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -157,7 +162,8 @@ uint_fast8_t piece_get_r(const Piece p)
 
 uint_fast8_t piece_get_c(const Piece p)
 {
-	const char *FUNC_NAME = "uint_fast8_t piece_get_c(const Piece p)";
+	const char *FUNC_NAME =
+"uint_fast8_t piece_get_c(const Piece p)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -169,8 +175,8 @@ uint_fast8_t piece_get_c(const Piece p)
 
 void piece_set_color(Piece p, enum PieceColor c)
 {
-	const char *FUNC_NAME = "void piece_set_color(Piece p, \
-enum PieceColor c)";
+	const char *FUNC_NAME =
+"void piece_set_color(Piece p, enum PieceColor c)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -188,8 +194,8 @@ enum PieceColor c)";
 
 enum PieceColor piece_get_color(const Piece p)
 {
-	const char *FUNC_NAME = "enum PieceColor piece_get_color(\
-const Piece p)";
+	const char *FUNC_NAME =
+"enum PieceColor piece_get_color(const Piece p)";
 
 	if(!p){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -201,8 +207,8 @@ const Piece p)";
 
 ErrFncPtr piece_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 {
-	const char *FUNC_NAME = "ErrFncPtr piece_set_err_hndl(\
-enum ErrorCode error_type, ErrFncPtr err_hndl)";
+	const char *FUNC_NAME =
+"ErrFncPtr piece_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)";
 
 	if(!(
 		error_type != GLOBAL_ERROR

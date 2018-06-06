@@ -75,7 +75,8 @@ void clear_screen(void)
 
 void print_board(const Board b)
 {
-	const char *FUNC_NAME = "void print_board(const Board b)";
+	const char *FUNC_NAME =
+"void print_board(const Board b)";
 
 	if(!b){
 		call_error(err_fnc_arr, NULL_PARAM, FILE_NAME, FUNC_NAME);
@@ -259,15 +260,16 @@ static void print_turn(const Board b)
 
 void print_menu(uint_fast8_t menu_width, uint_fast8_t menu_height)
 {
+	const char *FUNC_NAME =
+"void print_menu(uint_fast8_t menu_width, uint_fast8_t menu_height)";
+
+
 	char *pvp = "(P) Player Vs. Player (P)";
 	char *pve = "(E) Player Vs. A.I. (E)";
 	char *eve = "(A) A.I. Vs. A.I. (A)";
 	char *exit = "(X) Exit (X)";
 	uint_fast8_t option_count = 4 + 1;
 	uint_fast8_t grtst_msg_lgth = strlen(pvp);
-
-	const char *FUNC_NAME = "void print_menu(uint_fast8_t menu_width, \
-uint_fast8_t menu_height)";
 
 	if(menu_width < grtst_msg_lgth + 2){
 		call_error(err_fnc_arr, DISPLAY_WIDTH_SMALL, FILE_NAME,
@@ -335,7 +337,8 @@ static void print_menu_board_left_right(uint_fast8_t menu_width, char *msg)
 
 char capture_menu(void)
 {
-	const char *FUNC_NAME = "char capture_menu(void)";
+	const char *FUNC_NAME =
+"char capture_menu(void)";
 
 	terminate_on_def_err = false;
 
@@ -379,12 +382,12 @@ void pause(void)
 	FLUSH_EXCESS_INPUT();
 }
 
-bool capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old, uint_fast8_t *r_new,
-	uint_fast8_t *c_new)
+bool capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old,
+	uint_fast8_t *r_new, uint_fast8_t *c_new)
 {
-	const char *FUNC_NAME = "bool capture_move(\
-uint_fast8_t *r_old, uint_fast8_t *c_old, uint_fast8_t *r_new, \
-uint_fast8_t *c_new)";
+	const char *FUNC_NAME =
+"bool capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old, \
+uint_fast8_t *r_new, uint_fast8_t *c_new)";
 
 	terminate_on_def_err = false;
 
@@ -451,10 +454,12 @@ uint_fast8_t *c_new)";
 	return true;
 }
 
-ErrFncPtr display_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
+ErrFncPtr display_set_err_hndl(enum ErrorCode error_type,
+	ErrFncPtr err_hndl)
 {
-	const char *FUNC_NAME = "ErrFncPtr display_set_err_hndl(\
-enum ErrorCode error_type, ErrFncPtr err_hndl)";
+	const char *FUNC_NAME =
+"ErrFncPtr display_set_err_hndl(enum ErrorCode error_type, \
+ErrFncPtr err_hndl)";
 
 	if(!(
 		error_type != GLOBAL_ERROR
