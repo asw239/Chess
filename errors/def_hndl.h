@@ -4,8 +4,8 @@
 #include "ErrorCode.h"
 #include <stdbool.h>
 
-extern bool terminate_on_def_err;
+extern bool errors_terminate_on_def_err;
 
-void def_hndl(enum ErrorCode err, const char *msg);
+void errors_def_hndl(enum ErrorCode err, const char *msg);
 
 #endif

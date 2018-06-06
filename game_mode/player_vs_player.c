@@ -20,18 +20,18 @@ static void fnc_PIECE_MOVE_KING_CHECKED(enum ErrorCode err, const char *msg);
 static bool move_legal = true;
 void pvp_game_loop(void)
 {
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 	set_error_callbacks();
 
 	for(;;){
-		if(mate(b, board_get_turn(b)))
+		if(gl_mate(b, board_get_turn(b)))
 			break;
 
-		clear_screen();
-		print_board(b);
+		display_clear_screen();
+		display_print_board(b);
 
 		uint_fast8_t r_old, c_old, r_new, c_new;
-		if(!capture_move(&r_old, &c_old, &r_new, &c_new))
+		if(!display_capture_move(&r_old, &c_old, &r_new, &c_new))
 			continue;
 
 		Board b_cpy = board_create_copy(b);
@@ -42,7 +42,7 @@ void pvp_game_loop(void)
 			continue;
 		}
 
-		if(check(b, board_get_turn(b))){
+		if(gl_check(b, board_get_turn(b))){
 			fnc_PIECE_MOVE_KING_CHECKED(0, NULL);
 			board_destroy(&b);
 			b = b_cpy;
@@ -87,21 +87,21 @@ static void fnc_BOARD_EMPTY_SQUARE(enum ErrorCode err, const char *msg)
 {
 	move_legal = false;
 	printf("ERROR: attempting to manipulate an empty square\n");
-	pause();
+	display_pause();
 }
 
 static void fnc_PIECE_MOVE_UNEXPECTED_COLOR(enum ErrorCode err, const char *msg)
 {
 	move_legal = false;
 	printf("ERROR: attempting to move piece of opposing expected color\n");
-	pause();
+	display_pause();
 }
 
 static void fnc_PIECE_MOVE_ILLEGAL_CASTLE(enum ErrorCode err, const char *msg)
 {
 	move_legal = false;
 	printf("ERROR: castling in the current board state is illegal\n");
-	pause();
+	display_pause();
 }
 
 static void fnc_BOARD_INVALID_EN_PASSANT_PIECE(enum ErrorCode err,
@@ -109,33 +109,33 @@ static void fnc_BOARD_INVALID_EN_PASSANT_PIECE(enum ErrorCode err,
 {
 	move_legal = false;
 	printf("ERROR: cannot en-passant capture on non-skip pawns\n");
-	pause();
+	display_pause();
 }
 
 static void fnc_PIECE_MOVE_OVERLAPS_ALLY(enum ErrorCode err, const char *msg)
 {
 	move_legal = false;
 	printf("ERROR: attempting to move a Piece on top of an ally Piece\n");
-	pause();
+	display_pause();
 }
 
 static void fnc_PIECE_MOVE_NOT_IN_RANGE(enum ErrorCode err, const char *msg)
 {
 	move_legal = false;
 	printf("ERROR: attempting to move a Piece outside of valid range\n");
-	pause();
+	display_pause();
 }
 
 static void fnc_PIECE_MOVE_COLLISION(enum ErrorCode err, const char *msg)
 {
 	move_legal = false;
 	printf("ERROR: collision occured while moving piece\n");
-	pause();
+	display_pause();
 }
 
 static void fnc_PIECE_MOVE_KING_CHECKED(enum ErrorCode err, const char *msg)
 {
 	move_legal = false;
 	printf("ERROR: move puts king in check\n");
-	pause();
+	display_pause();
 }

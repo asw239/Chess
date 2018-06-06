@@ -26,7 +26,8 @@ static void print_menu_board_top_bottom(uint_fast8_t menu_width);
 static void print_menu_board_left_right(uint_fast8_t menu_width, char *msg);
 void pause(void);
 
-static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
+static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] =
+	errors_def_hndl};
 static const char *FILE_NAME = "display_cli.c";
 
 enum UPieceType{
@@ -73,7 +74,7 @@ void clear_screen(void)
 		putchar('\n');
 }
 
-void print_board(const Board b)
+void display_print_board(const Board b)
 {
 	const char *FUNC_NAME =
 "void print_board(const Board b)";
@@ -258,7 +259,7 @@ static void print_turn(const Board b)
 		printf("%s\n", b_msg);
 }
 
-void print_menu(uint_fast8_t menu_width, uint_fast8_t menu_height)
+void display_print_menu(uint_fast8_t menu_width, uint_fast8_t menu_height)
 {
 	const char *FUNC_NAME =
 "void print_menu(uint_fast8_t menu_width, uint_fast8_t menu_height)";
@@ -335,12 +336,12 @@ static void print_menu_board_left_right(uint_fast8_t menu_width, char *msg)
 	}
 }
 
-char capture_menu(void)
+char display_capture_menu(void)
 {
 	const char *FUNC_NAME =
 "char capture_menu(void)";
 
-	terminate_on_def_err = false;
+	errors_terminate_on_def_err = false;
 
 	printf("\nEnter menu selection: ");
 
@@ -359,13 +360,13 @@ char capture_menu(void)
 	case 'E':
 	case 'A':
 	case 'X':
-		terminate_on_def_err = true;
+		errors_terminate_on_def_err = true;
 		return toupper(option);
 	case 'p':
 	case 'e':
 	case 'a':
 	case 'x':
-		terminate_on_def_err = true;
+		errors_terminate_on_def_err = true;
 		return option;
 	default:
 		FLUSH_EXCESS_INPUT();
@@ -376,20 +377,20 @@ char capture_menu(void)
 	}
 }
 
-void pause(void)
+void display_pause(void)
 {
 	printf("\nPress any key to continue: ");
 	FLUSH_EXCESS_INPUT();
 }
 
-bool capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old,
+bool display_capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old,
 	uint_fast8_t *r_new, uint_fast8_t *c_new)
 {
 	const char *FUNC_NAME =
 "bool capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old, \
 uint_fast8_t *r_new, uint_fast8_t *c_new)";
 
-	terminate_on_def_err = false;
+	errors_terminate_on_def_err = false;
 
 	printf("\nEnter source destination: ");
 
@@ -450,7 +451,7 @@ uint_fast8_t *r_new, uint_fast8_t *c_new)";
 		return false;
 	}
 
-	terminate_on_def_err = true;
+	errors_terminate_on_def_err = true;
 	return true;
 }
 

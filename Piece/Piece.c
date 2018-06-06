@@ -13,7 +13,8 @@ struct PieceStruct{
 	enum PieceColor *color;
 };
 
-static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
+static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] =
+	errors_def_hndl};
 static const char *FILE_NAME = "Piece.c";
 
 Piece piece_create(void)

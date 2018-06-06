@@ -5,9 +5,9 @@
 void chess_menu(void)
 {
 	for(;;){
-		clear_screen();
-		print_menu(80, 25);
-		char option = capture_menu();
+		display_clear_screen();
+		display_print_menu(80, 25);
+		char option = display_capture_menu();
 
 		switch(option){
 		case 'p':

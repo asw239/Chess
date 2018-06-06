@@ -5,19 +5,19 @@
 #include "../errors/ErrorCode.h"
 #include "../errors/error_utilities.h"
 
-Board generate_start_board(void);
+Board gl_generate_start_board(void);
 
-bool validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+bool gl_validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new);
 
-bool check(const Board b, enum PieceColor c);
+bool gl_check(const Board b, enum PieceColor c);
 
-bool mate(const Board b, enum PieceColor c);
+bool gl_mate(const Board b, enum PieceColor c);
 
-bool check_castle(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+bool gl_check_castle(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t c_new);
 
-bool check_en_passant(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+bool gl_check_en_passant(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new);
 
 ErrFncPtr gl_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl);

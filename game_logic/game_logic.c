@@ -38,10 +38,11 @@ static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 static bool check_en_passant_pawn(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_new);
 
-static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] = def_hndl};
+static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] =
+	errors_def_hndl};
 static const char *FILE_NAME = "game_logic.c";
 
-Board generate_start_board(void)
+Board gl_generate_start_board(void)
 {
 	Board b = board_create();
 	board_set_turn(b, WHITE);
@@ -139,7 +140,7 @@ Board generate_start_board(void)
 	return b;
 }
 
-bool validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+bool gl_validate_move(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	static const char *FUNC_NAME =
@@ -576,7 +577,7 @@ uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)";
 	return true;
 }
 
-bool check(const Board b, enum PieceColor c)
+bool gl_check(const Board b, enum PieceColor c)
 {
 	const char *FUNC_NAME =
 "bool check(const Board b, enum PieceColor c)";
@@ -612,7 +613,7 @@ bool check(const Board b, enum PieceColor c)
 				&&
 				!(i == king_r && j == king_c)
 				&&
-				validate_move(b, i, j, king_r, king_c)
+				gl_validate_move(b, i, j, king_r, king_c)
 			){
 				return_val = true;
 				goto LOOPS_EXIT;
@@ -650,7 +651,7 @@ static void null_func(enum ErrorCode err, const char *msg)
 	;
 }
 
-bool mate(const Board b, enum PieceColor c)
+bool gl_mate(const Board b, enum PieceColor c)
 {
 	const char *FUNC_NAME =
 "bool mate(const Board b, enum PieceColor c)";
@@ -666,7 +667,7 @@ bool mate(const Board b, enum PieceColor c)
 		return false;
 	}
 
-	if(!check(b, c))
+	if(!gl_check(b, c))
 		return false;
 
 	Piece *active_allies_list = generate_active_allies_list(b, c);
@@ -715,11 +716,11 @@ static bool can_defend_mate(Board b, Piece p, enum PieceColor c)
 			if(
 				!(piece_r == i && piece_c == j)
 				&&
-				validate_move(b, piece_r, piece_c, i, j)
+				gl_validate_move(b, piece_r, piece_c, i, j)
 			){
 				Board b_cpy = board_create_copy(b);
 				board_move_piece(b_cpy, piece_r, piece_c, i, j);
-				if(!check(b_cpy, c)){
+				if(!gl_check(b_cpy, c)){
 					board_destroy(&b_cpy);
 					return_val = true;
 					goto LOOPS_EXIT;
@@ -738,7 +739,7 @@ static bool can_defend_mate(Board b, Piece p, enum PieceColor c)
 	return return_val;
 }
 
-bool check_castle(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+bool gl_check_castle(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t c_new)
 {
 	enum PieceColor king_c =
@@ -932,7 +933,7 @@ static bool check_castle_king_in_check(const Board b,
 "static bool check_castle_king_in_check(const Board b, \
 enum PieceColor king_c)";
 
-	if(check(b, king_c)){
+	if(gl_check(b, king_c)){
 		call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE, FILE_NAME,
 			FUNC_NAME);
 		return true;
@@ -958,7 +959,7 @@ bool attempting_right_castle)";
 	){
 		Board b_cpy = board_create_copy(b);
 		board_move_piece(b_cpy, 7, 3, 7, 2);
-		if(check(b_cpy, king_c)){
+		if(gl_check(b_cpy, king_c)){
 			board_destroy(&b_cpy);
 			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
 				FILE_NAME, FUNC_NAME);
@@ -975,7 +976,7 @@ bool attempting_right_castle)";
 	){
 		Board b_cpy = board_create_copy(b);
 		board_move_piece(b_cpy, 7, 3, 7, 4);
-		if(check(b_cpy, king_c)){
+		if(gl_check(b_cpy, king_c)){
 			board_destroy(&b_cpy);
 			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
 				FILE_NAME, FUNC_NAME);
@@ -992,7 +993,7 @@ bool attempting_right_castle)";
 	){
 		Board b_cpy = board_create_copy(b);
 		board_move_piece(b_cpy, 0, 3, 0, 2);
-		if(check(b_cpy, king_c)){
+		if(gl_check(b_cpy, king_c)){
 			board_destroy(&b_cpy);
 			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
 				FILE_NAME, FUNC_NAME);
@@ -1009,7 +1010,7 @@ bool attempting_right_castle)";
 	){
 		Board b_cpy = board_create_copy(b);
 		board_move_piece(b_cpy, 0, 3, 0, 4);
-		if(check(b_cpy, king_c)){
+		if(gl_check(b_cpy, king_c)){
 			board_destroy(&b_cpy);
 			call_error(err_fnc_arr, PIECE_MOVE_ILLEGAL_CASTLE,
 				FILE_NAME, FUNC_NAME);
@@ -1024,7 +1025,7 @@ bool attempting_right_castle)";
 	return true;
 }
 
-bool check_en_passant(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
+bool gl_check_en_passant(const Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	if(!check_en_passant_attempt(b, r_old, c_old, r_new, c_new))
