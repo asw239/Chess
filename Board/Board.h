@@ -29,9 +29,6 @@ void board_destroy(Board *b);
 
 void board_link_piece(Board b, Piece p, uint_fast8_t r, uint_fast8_t c);
 
-void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
-	uint_fast8_t r_new, uint_fast8_t c_new);
-
 Piece board_get_piece(Board b, uint_fast8_t r, uint_fast8_t c);
 
 void board_set_turn(Board b, enum PieceColor c);

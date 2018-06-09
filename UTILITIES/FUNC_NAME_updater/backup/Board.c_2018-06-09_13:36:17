@@ -174,7 +174,7 @@ void board_link_piece(Board b, Piece p, uint_fast8_t r, uint_fast8_t c)
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	static const char *FUNC_NAME =
-"/*void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old, \
+"void board_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old, \
 uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	//all error checks implemented in validate_move

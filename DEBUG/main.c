@@ -23,16 +23,16 @@ void gl_test_mate(void);
 void gl_test_mate2(void);
 void gl_test_mate3(void);
 void gl_test_mate4(void);
-void gl_test_castle(enum PieceColor c);
-void gl_test_castle2(enum PieceColor c, bool left_castle);
-void gl_test_castle3(enum PieceColor c, bool left_castle);
-void gl_test_castle4(enum PieceColor c, bool left_castle, bool queen,
-	bool bishop, bool knight);
-void gl_test_castle5(enum PieceColor c);
-void gl_test_castle6(enum PieceColor c, bool left_castle);
-void board_move_piece_castle(void);
-void board_move_piece_castle2(void);
-void board_move_piece_en_passant(void);
+//void gl_test_castle(enum PieceColor c);
+//void gl_test_castle2(enum PieceColor c, bool left_castle);
+//void gl_test_castle3(enum PieceColor c, bool left_castle);
+//void gl_test_castle4(enum PieceColor c, bool left_castle, bool queen,
+	//bool bishop, bool knight);
+//void gl_test_castle5(enum PieceColor c);
+//void gl_test_castle6(enum PieceColor c, bool left_castle);
+void gl_move_piece_castle(void);
+void gl_move_piece_castle2(void);
+void gl_move_piece_en_passant(void);
 void board_create_copy_en_passant(void);
 void gl_test_check_en_passant(void);
 void display_test_print_menu(void);
@@ -40,7 +40,7 @@ void test_entry_point(void);
 
 int main(int argc, char *argv[])
 {
-	//test_entry_point();
+	test_entry_point();
 	return 0;
 }
 
@@ -80,16 +80,16 @@ void gl_test_move_validation(void)
 	piece_set_type(p3, PAWN);
 	board_link_piece(b, p3, 5, 3);
 
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
-	board_move_piece(b, 5, 5, 5, 1);
+	gl_move_piece(b, 5, 5, 5, 1);
 }
 
 void gl_test_start_board(void)
 {
-	Board b = generate_start_board();
-	print_board(b);
+	Board b = gl_generate_start_board();
+	display_print_board(b);
 }
 
 void board_test_link_move(void)
@@ -104,69 +104,69 @@ void board_test_link_move(void)
 	piece_set_type(p2, PAWN);
 	piece_set_color(p2, BLACK);
 	board_link_piece(b, p2, 1, 0);
-	print_board(b);
+	display_print_board(b);
 
-	board_move_piece(b, 6, 0, 5, 0);
-	board_move_piece(b, 1, 0, 2, 0);
-	print_board(b);
+	gl_move_piece(b, 6, 0, 5, 0);
+	gl_move_piece(b, 1, 0, 2, 0);
+	display_print_board(b);
 }
 
 void board_test_move_capture(void)
 {
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 	board_init_capture_list(b);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 0, 1, 2, 2);
+	gl_move_piece(b, 0, 1, 2, 2);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 2, 2, 4, 1);
+	gl_move_piece(b, 2, 2, 4, 1);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 4, 1, 6, 0);
+	gl_move_piece(b, 4, 1, 6, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 6, 0, 7, 2);
+	gl_move_piece(b, 6, 0, 7, 2);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 6, 3, 4, 3);
+	gl_move_piece(b, 6, 3, 4, 3);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 4, 3, 3, 3);
+	gl_move_piece(b, 4, 3, 3, 3);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 7, 4, 3, 0);
+	gl_move_piece(b, 7, 4, 3, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 3, 0, 1, 0);
+	gl_move_piece(b, 3, 0, 1, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 
 	getchar();
-	board_move_piece(b, 1, 0, 0, 0);
+	gl_move_piece(b, 1, 0, 0, 0);
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	print_board(b);
+	display_print_board(b);
 }
 
 void display_test_print_cap_list(void)
 {
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 	board_init_capture_list(b);
 
 	for(uint_fast8_t i = 0; i < PIECE_COUNT; i++){
@@ -182,16 +182,16 @@ void display_test_print_cap_list(void)
 		board_get_capture_list(b, BLACK)[i] = tmp;
 	}
 
-	print_board(b);
+	display_print_board(b);
 }
 
 void board_test_unmoved_pieces(void)
 {
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 
 	for(int i = 0; i < 50; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	printf("W_L_ROOK moved: %s\n",
 		board_has_piece_moved(b, W_L_ROOK) ? "true" : "false");
 	printf("W_R_ROOK moved: %s\n",
@@ -206,16 +206,16 @@ void board_test_unmoved_pieces(void)
 		board_has_piece_moved(b, B_KING) ? "true" : "false");
 	getchar();
 
-	board_move_piece(b, 1, 0, 3, 0);
-	board_move_piece(b, 1, 7, 3, 7);
-	board_move_piece(b, 1, 3, 3, 3);
-	board_move_piece(b, 6, 0, 4, 0);
-	board_move_piece(b, 6, 7, 4, 7);
-	board_move_piece(b, 6, 3, 4, 3);
+	gl_move_piece(b, 1, 0, 3, 0);
+	gl_move_piece(b, 1, 7, 3, 7);
+	gl_move_piece(b, 1, 3, 3, 3);
+	gl_move_piece(b, 6, 0, 4, 0);
+	gl_move_piece(b, 6, 7, 4, 7);
+	gl_move_piece(b, 6, 3, 4, 3);
 
 	for(int i = 0; i < 50; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	printf("W_L_ROOK moved: %s\n",
 		board_has_piece_moved(b, W_L_ROOK) ? "true" : "false");
 	printf("W_R_ROOK moved: %s\n",
@@ -230,12 +230,12 @@ void board_test_unmoved_pieces(void)
 		board_has_piece_moved(b, B_KING) ? "true" : "false");
 	getchar();
 
-	board_move_piece(b, 0, 0, 2, 0);
-	board_move_piece(b, 7, 3, 6, 3);
+	gl_move_piece(b, 0, 0, 2, 0);
+	gl_move_piece(b, 7, 3, 6, 3);
 
 	for(int i = 0; i < 50; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	printf("W_L_ROOK moved: %s\n",
 		board_has_piece_moved(b, W_L_ROOK) ? "true" : "false");
 	printf("W_R_ROOK moved: %s\n",
@@ -290,13 +290,13 @@ void piece_test_copy(void)
 
 void board_test_copy(void)
 {
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 	Board b_cpy = board_create_copy(b);
 
 	printf("original board\n");
-	print_board(b);
+	display_print_board(b);
 	printf("copied board\n");
-	print_board(b_cpy);
+	display_print_board(b_cpy);
 
 	board_destroy(&b);
 	board_destroy(&b_cpy);
@@ -324,20 +324,20 @@ void gl_test_check_1(void)
 	board_link_piece(b, p, 5, 6);
 
 	for(int i = 0; i < 100; i++) printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
 	getchar();
 
-	board_move_piece(b, 5, 6, 6, 6);
+	gl_move_piece(b, 5, 6, 6, 6);
 	for(int i = 0; i < 100; i++) printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
 	getchar();
 
-	board_move_piece(b, 7, 7, 6, 6);
+	gl_move_piece(b, 7, 7, 6, 6);
 	for(int i = 0; i < 100; i++) printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
 	getchar();
 
 	board_destroy(&b);
@@ -345,28 +345,28 @@ void gl_test_check_1(void)
 
 void gl_test_check_2(void)
 {
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 	for(int i = 0; i < 100; i++) printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, BLACK));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, BLACK));
 	getchar();
 
-	board_move_piece(b, 6, 3, 5, 3);
+	gl_move_piece(b, 6, 3, 5, 3);
 	for(int i = 0; i < 100; i++) printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, BLACK));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, BLACK));
 	getchar();
 
-	board_move_piece(b, 1, 2, 3, 2);
+	gl_move_piece(b, 1, 2, 3, 2);
 	for(int i = 0; i < 100; i++) printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, BLACK));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, BLACK));
 	getchar();
 
-	board_move_piece(b, 7, 4, 3, 0);
+	gl_move_piece(b, 7, 4, 3, 0);
 	for(int i = 0; i < 100; i++) printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, BLACK));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, BLACK));
 	getchar();
 
 	board_destroy(&b);
@@ -375,9 +375,9 @@ void gl_test_check_2(void)
 void gl_test_check_time_complexity(void)
 {
 	//lol small delay at 100,000 check attempts, dont even sweat it
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 	for(int i = 0; i < 100000; i++)
-		check(b, BLACK);
+		gl_check(b, BLACK);
 
 	board_destroy(&b);
 }
@@ -419,18 +419,18 @@ void gl_test_mate(void)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
-	board_move_piece(b, 5, 6, 6, 6);
+	gl_move_piece(b, 5, 6, 6, 6);
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
 	board_destroy(&b);
@@ -463,17 +463,17 @@ void gl_test_mate2(void)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
-	board_move_piece(b, 5, 0, 7, 0);
+	gl_move_piece(b, 5, 0, 7, 0);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
 	board_destroy(&b);
@@ -516,17 +516,17 @@ void gl_test_mate3(void)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
-	board_move_piece(b, 0, 0, 7, 0);
+	gl_move_piece(b, 0, 0, 7, 0);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
 	board_destroy(&b);
@@ -575,23 +575,23 @@ void gl_test_mate4(void)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
-	board_move_piece(b, 1, 1, 6, 6);
+	gl_move_piece(b, 1, 1, 6, 6);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
-	printf("check: %d\n", check(b, WHITE));
-	printf("mate: %d\n", mate(b, WHITE));
+	display_print_board(b);
+	printf("check: %d\n", gl_check(b, WHITE));
+	printf("mate: %d\n", gl_mate(b, WHITE));
 	getchar();
 
 	board_destroy(&b);
 }
 
-void gl_test_castle(enum PieceColor c)
+/*void gl_test_castle(enum PieceColor c)
 {
 	//validates the function check_castle_attempt
 	//lowkey validates all of them
@@ -629,7 +629,7 @@ void gl_test_castle(enum PieceColor c)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	if(c == WHITE){
 		printf("valid castle attempt from [7, 3] to [7, 4]? %d\n",
 			check_castle(b, 7, 3, 4));
@@ -691,27 +691,27 @@ void gl_test_castle2(enum PieceColor c, bool left_castle)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
 	if(c == WHITE)
-		board_move_piece(b, 7, 3, 6, 3);
+		gl_move_piece(b, 7, 3, 6, 3);
 	else
-		board_move_piece(b, 0, 3, 1, 3);
+		gl_move_piece(b, 0, 3, 1, 3);
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
 	if(c == WHITE)
-		board_move_piece(b, 6, 3, 7, 3);
+		gl_move_piece(b, 6, 3, 7, 3);
 	else
-		board_move_piece(b, 1, 3, 0, 3);
+		gl_move_piece(b, 1, 3, 0, 3);
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	if(c == WHITE && left_castle){
 		printf("valid castle attempt from [7, 3] to [7, 1]? ");
 		fflush(stdout);
@@ -774,41 +774,41 @@ void gl_test_castle3(enum PieceColor c, bool left_castle)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
 	if(c == WHITE && left_castle)
-		board_move_piece(b, 7, 0, 0, 0);
+		gl_move_piece(b, 7, 0, 0, 0);
 
 	else if(c == WHITE && !left_castle)
-		board_move_piece(b, 7, 7, 0, 7);
+		gl_move_piece(b, 7, 7, 0, 7);
 
 	else if(c == BLACK && left_castle)
-		board_move_piece(b, 0, 0, 7, 0);
+		gl_move_piece(b, 0, 0, 7, 0);
 
 	else if(c == BLACK && !left_castle)
-		board_move_piece(b, 0, 7, 7, 7);
+		gl_move_piece(b, 0, 7, 7, 7);
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
 	if(c == WHITE && left_castle)
-		board_move_piece(b, 0, 0, 7, 0);
+		gl_move_piece(b, 0, 0, 7, 0);
 
 	else if(c == WHITE && !left_castle)
-		board_move_piece(b, 0, 7, 7, 7);
+		gl_move_piece(b, 0, 7, 7, 7);
 
 	else if(c == BLACK && left_castle)
-		board_move_piece(b, 7, 0, 0, 0);
+		gl_move_piece(b, 7, 0, 0, 0);
 
 	else if(c == BLACK && !left_castle)
-		board_move_piece(b, 7, 7, 0, 7);
+		gl_move_piece(b, 7, 7, 0, 7);
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	if(c == WHITE && left_castle){
 		printf("valid castle attempt from [7, 3] to [7, 5]? %d\n",
 			check_castle(b, 7, 3, 5));
@@ -922,7 +922,7 @@ void gl_test_castle4(enum PieceColor c, bool left_castle, bool queen,
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	if(c == WHITE && left_castle){
 		printf("valid castle attempt from [7, 3] to [7, 1]? ");
 		fflush(stdout);
@@ -995,7 +995,7 @@ void gl_test_castle5(enum PieceColor c)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	if(c == WHITE){
 		printf("valid castle attempt from [7, 3] to [7, 1]? ");
 		fflush(stdout);
@@ -1068,7 +1068,7 @@ void gl_test_castle6(enum PieceColor c, bool left_castle)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	if(c == WHITE && left_castle){
 		printf("valid castle attempt from [7, 3] to [7, 5]? %d\n",
 			check_castle(b, 7, 3, 5));
@@ -1102,9 +1102,9 @@ void gl_test_castle6(enum PieceColor c, bool left_castle)
 
 	board_destroy(&b);
 
-}
+}*/
 
-void board_move_piece_castle(void)
+void gl_move_piece_castle(void)
 {
 	// tests valid castle execution
 
@@ -1130,19 +1130,19 @@ void board_move_piece_castle(void)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
-	board_move_piece(b, 7, 3, 7, 1);
+	gl_move_piece(b, 7, 3, 7, 1);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
 	board_destroy(&b);
 }
 
-void board_move_piece_castle2(void)
+void gl_move_piece_castle2(void)
 {
 	// tests in-valid castle execution
 
@@ -1176,29 +1176,29 @@ void board_move_piece_castle2(void)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
-	board_move_piece(b, 7, 3, 7, 1);
+	gl_move_piece(b, 7, 3, 7, 1);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
 	board_destroy(&b);
 }
 
-void board_move_piece_en_passant(void)
+void gl_move_piece_en_passant(void)
 {
 	//tests setting and un-setting of the en_pessant_pawn
 
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 
 	Piece en_passant_pawn;
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1207,10 +1207,10 @@ void board_move_piece_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b, 6, 4, 4, 4);
+	gl_move_piece(b, 6, 4, 4, 4);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1219,10 +1219,10 @@ void board_move_piece_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b, 1, 2, 3, 2);
+	gl_move_piece(b, 1, 2, 3, 2);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1231,10 +1231,10 @@ void board_move_piece_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b, 6, 7, 5, 7);
+	gl_move_piece(b, 6, 7, 5, 7);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1243,10 +1243,10 @@ void board_move_piece_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b, 1, 6, 3, 6);
+	gl_move_piece(b, 1, 6, 3, 6);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1255,10 +1255,10 @@ void board_move_piece_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b, 7, 4, 5, 4);
+	gl_move_piece(b, 7, 4, 5, 4);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1274,13 +1274,13 @@ void board_create_copy_en_passant(void)
 {
 	//tests board copy creation in terms of en passant
 
-	Board b = generate_start_board();
+	Board b = gl_generate_start_board();
 
 	Piece en_passant_pawn;
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1289,10 +1289,10 @@ void board_create_copy_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b, 6, 4, 4, 4);
+	gl_move_piece(b, 6, 4, 4, 4);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	en_passant_pawn = board_get_en_passant_pawn(b);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1303,10 +1303,10 @@ void board_create_copy_en_passant(void)
 
 	Board b_cpy = board_create_copy(b);
 	board_destroy(&b);
-	board_move_piece(b_cpy, 1, 2, 3, 2);
+	gl_move_piece(b_cpy, 1, 2, 3, 2);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b_cpy);
+	display_print_board(b_cpy);
 	en_passant_pawn = board_get_en_passant_pawn(b_cpy);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1315,10 +1315,10 @@ void board_create_copy_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b_cpy, 6, 7, 5, 7);
+	gl_move_piece(b_cpy, 6, 7, 5, 7);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b_cpy);
+	display_print_board(b_cpy);
 	en_passant_pawn = board_get_en_passant_pawn(b_cpy);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1327,10 +1327,10 @@ void board_create_copy_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b_cpy, 1, 6, 3, 6);
+	gl_move_piece(b_cpy, 1, 6, 3, 6);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b_cpy);
+	display_print_board(b_cpy);
 	en_passant_pawn = board_get_en_passant_pawn(b_cpy);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1339,10 +1339,10 @@ void board_create_copy_en_passant(void)
 	}
 	getchar();
 
-	board_move_piece(b_cpy, 7, 4, 5, 4);
+	gl_move_piece(b_cpy, 7, 4, 5, 4);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b_cpy);
+	display_print_board(b_cpy);
 	en_passant_pawn = board_get_en_passant_pawn(b_cpy);
 	if(en_passant_pawn){
 		printf("en passant pawn detected: [%d, %d]\n",
@@ -1384,31 +1384,31 @@ void gl_test_check_en_passant(void)
 
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
-	board_move_piece(b, 6, 3, 4, 3);
+	gl_move_piece(b, 6, 3, 4, 3);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
-	board_move_piece(b, 4, 3, 3, 3);
+	gl_move_piece(b, 4, 3, 3, 3);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
-	board_move_piece(b, 1, 4, 3, 4);
+	gl_move_piece(b, 1, 4, 3, 4);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
-	board_move_piece(b, 3, 3, 2, 4);
+	gl_move_piece(b, 3, 3, 2, 4);
 	for(int i = 0; i < 100; i++)
 		printf("\n");
-	print_board(b);
+	display_print_board(b);
 	getchar();
 
 	board_destroy(&b);
@@ -1416,9 +1416,9 @@ void gl_test_check_en_passant(void)
 
 void display_test_print_menu(void)
 {
-	clear_screen();
-	print_menu(60, 20);
-	capture_menu();
+	display_clear_screen();
+	display_print_menu(60, 20);
+	display_capture_menu();
 }
 
 void test_entry_point(void)
