@@ -1,5 +1,5 @@
-#include "error_utilities.h"
 #include <string.h>
+#include "error_utilities.h"
 
 #define CALL_TRACE_SIZE 512
 

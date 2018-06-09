@@ -17,7 +17,6 @@ static void fnc_PIECE_MOVE_NOT_IN_RANGE(enum ErrorCode err, const char *msg);
 static void fnc_PIECE_MOVE_COLLISION(enum ErrorCode err, const char *msg);
 static void fnc_PIECE_MOVE_KING_CHECKED(enum ErrorCode err, const char *msg);
 
-static bool move_legal = true;
 void pvp_game_loop(void)
 {
 	Board b = gl_generate_start_board();
@@ -36,9 +35,8 @@ void pvp_game_loop(void)
 
 		Board b_cpy = board_create_copy(b);
 
-		board_move_piece(b, r_old, c_old, r_new, c_new);
-		if(!move_legal){
-			move_legal = true;
+		if(!gl_move_piece(b, r_old, c_old, r_new, c_new)){
+			board_destroy(&b_cpy);
 			continue;
 		}
 
@@ -49,6 +47,7 @@ void pvp_game_loop(void)
 			continue;
 		}
 
+		board_destroy(&b_cpy);
 		board_flip_turn(b);
 	}
 
@@ -59,9 +58,9 @@ void pvp_game_loop(void)
 static void set_error_callbacks(void)
 {
 	board_set_err_hndl(BOARD_EMPTY_SQUARE, fnc_BOARD_EMPTY_SQUARE);
-	board_set_err_hndl(PIECE_MOVE_UNEXPECTED_COLOR,
-		fnc_PIECE_MOVE_UNEXPECTED_COLOR);
 
+	gl_set_err_hndl(PIECE_MOVE_UNEXPECTED_COLOR,
+		fnc_PIECE_MOVE_UNEXPECTED_COLOR);
 	gl_set_err_hndl(PIECE_MOVE_ILLEGAL_CASTLE,
 		fnc_PIECE_MOVE_ILLEGAL_CASTLE);
 	gl_set_err_hndl(BOARD_INVALID_EN_PASSANT_PIECE,
@@ -74,8 +73,9 @@ static void set_error_callbacks(void)
 static void unset_error_callbacks(void)
 {
 	board_set_err_hndl(BOARD_EMPTY_SQUARE, NULL);
-	board_set_err_hndl(PIECE_MOVE_UNEXPECTED_COLOR, NULL);
 
+
+	gl_set_err_hndl(PIECE_MOVE_UNEXPECTED_COLOR, NULL);
 	gl_set_err_hndl(PIECE_MOVE_ILLEGAL_CASTLE, NULL);
 	gl_set_err_hndl(BOARD_INVALID_EN_PASSANT_PIECE, NULL);
 	gl_set_err_hndl(PIECE_MOVE_OVERLAPS_ALLY, NULL);
@@ -85,21 +85,18 @@ static void unset_error_callbacks(void)
 
 static void fnc_BOARD_EMPTY_SQUARE(enum ErrorCode err, const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: attempting to manipulate an empty square\n");
 	display_pause();
 }
 
 static void fnc_PIECE_MOVE_UNEXPECTED_COLOR(enum ErrorCode err, const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: attempting to move piece of opposing expected color\n");
 	display_pause();
 }
 
 static void fnc_PIECE_MOVE_ILLEGAL_CASTLE(enum ErrorCode err, const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: castling in the current board state is illegal\n");
 	display_pause();
 }
@@ -107,35 +104,30 @@ static void fnc_PIECE_MOVE_ILLEGAL_CASTLE(enum ErrorCode err, const char *msg)
 static void fnc_BOARD_INVALID_EN_PASSANT_PIECE(enum ErrorCode err,
 	const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: cannot en-passant capture on non-skip pawns\n");
 	display_pause();
 }
 
 static void fnc_PIECE_MOVE_OVERLAPS_ALLY(enum ErrorCode err, const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: attempting to move a Piece on top of an ally Piece\n");
 	display_pause();
 }
 
 static void fnc_PIECE_MOVE_NOT_IN_RANGE(enum ErrorCode err, const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: attempting to move a Piece outside of valid range\n");
 	display_pause();
 }
 
 static void fnc_PIECE_MOVE_COLLISION(enum ErrorCode err, const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: collision occured while moving piece\n");
 	display_pause();
 }
 
 static void fnc_PIECE_MOVE_KING_CHECKED(enum ErrorCode err, const char *msg)
 {
-	move_legal = false;
 	printf("ERROR: move puts king in check\n");
 	display_pause();
 }

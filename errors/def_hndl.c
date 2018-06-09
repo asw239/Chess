@@ -1,10 +1,10 @@
-#include "def_hndl.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "def_hndl.h"
 
-bool terminate_on_def_err = true;
+bool errors_terminate_on_def_err = true;
 
-void def_hndl(enum ErrorCode err, const char *msg)
+void errors_def_hndl(enum ErrorCode err, const char *msg)
 {
 	fprintf(stderr, "\n%s\n", msg);
 
@@ -85,7 +85,7 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr, "ERROR #%d (PIECE_MOVE_UNEXPECTED_COLOR)\n",
 			err);
 		fprintf(stderr,
-			"attempting to move piece of opposing expected color\n");
+			"attempting to move piece of opposing turns color\n");
 		break;
 	case BOARD_INVALID_EN_PASSANT_PIECE:
 		fprintf(stderr, "ERROR #%d (BOARD_INVALID_EN_PASSANT_PIECE)\n",
@@ -119,6 +119,6 @@ void def_hndl(enum ErrorCode err, const char *msg)
 		fprintf(stderr, "ERROR #%d (UNKNOWN_ERR_NUM)\n", err);
 	}
 
-	if(terminate_on_def_err)
+	if(errors_terminate_on_def_err)
 		exit(err);
 }

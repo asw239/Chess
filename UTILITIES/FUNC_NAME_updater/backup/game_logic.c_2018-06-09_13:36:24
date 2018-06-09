@@ -162,8 +162,7 @@ bool gl_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old,
 	uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	static const char *FUNC_NAME =
-"bool gl_move_piece(Board b, uint_fast8_t r_old, uint_fast8_t c_old, \
-uint_fast8_t r_new, uint_fast8_t c_new)";
+"bool gl_move()";
 
 	if(
 		board_get_turn(b)
@@ -196,7 +195,7 @@ bool gl_validate_move(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	static const char *FUNC_NAME =
-"bool gl_validate_move(const Board b, uint_fast8_t r_old, \
+"static bool validate_move(const Board b, uint_fast8_t r_old, \
 uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	if(!b){
@@ -341,8 +340,8 @@ static bool check_move_king(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	static const char *FUNC_NAME =
-"static bool check_move_king(const Board b, uint_fast8_t r_old, \
-uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)";
+"static bool check_move_king(uint_fast8_t r_old, uint_fast8_t c_old, \
+uint_fast8_t r_new, uint_fast8_t c_new)";
 
 	enum CheckReturn cr_castle = check_castle(b, r_old, c_old, c_new);
 	if(cr_castle == FAIL)
