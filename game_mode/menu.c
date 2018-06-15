@@ -11,7 +11,7 @@ void chess_menu(void)
 
 		switch(option){
 		case 'p':
-			pvp_game_loop();
+			pvp_game_loop(NULL);
 			continue;
 		case 'e':
 			continue;
