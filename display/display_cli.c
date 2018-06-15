@@ -24,7 +24,6 @@ static void print_capture_list(const Board b, enum PieceColor c);
 static void print_turn(const Board b);
 static void print_menu_board_top_bottom(uint_fast8_t menu_width);
 static void print_menu_board_left_right(uint_fast8_t menu_width, char *msg);
-void pause(void);
 
 static ErrFncPtr err_fnc_arr[ERROR_CODE_COUNT] = {[GLOBAL_ERROR] =
 	errors_def_hndl};
@@ -350,7 +349,7 @@ char display_capture_menu(void)
 		FLUSH_EXCESS_INPUT();
 		call_error(err_fnc_arr, CAPTURE_MENU_BAD_INP, FILE_NAME,
 			FUNC_NAME);
-		pause();
+		display_pause();
 		return '\0';
 	}
 	FLUSH_EXCESS_INPUT();
@@ -372,7 +371,7 @@ char display_capture_menu(void)
 		FLUSH_EXCESS_INPUT();
 		call_error(err_fnc_arr, CAPTURE_MENU_BAD_INP, FILE_NAME,
 			FUNC_NAME);
-		pause();
+		display_pause();
 		return '\0';
 	}
 }
@@ -383,11 +382,11 @@ void display_pause(void)
 	FLUSH_EXCESS_INPUT();
 }
 
-bool display_capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old,
+bool display_capture_move(FILE *s, uint_fast8_t *r_old, uint_fast8_t *c_old,
 	uint_fast8_t *r_new, uint_fast8_t *c_new)
 {
 	static const char *FUNC_NAME =
-"bool display_capture_move(uint_fast8_t *r_old, uint_fast8_t *c_old, \
+"bool display_capture_move(FILE *s, uint_fast8_t *r_old, uint_fast8_t *c_old, \
 uint_fast8_t *r_new, uint_fast8_t *c_new)";
 
 	errors_terminate_on_def_err = false;
@@ -395,13 +394,29 @@ uint_fast8_t *r_new, uint_fast8_t *c_new)";
 	printf("\nEnter source destination: ");
 
 	char cr_old, cc_old, space, cr_new, cc_new;
-	if(scanf(" %c%c%c%c%c", &cr_old,&cc_old,&space,&cr_new,&cc_new) != 5){
-		FLUSH_EXCESS_INPUT();
-		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
-			FUNC_NAME);
-		pause();
-		return false;
+	if(s){
+		if(fscanf(s, " %c%c%c%c",
+			&cc_old,&cr_old,&cc_new,&cr_new) != 4)
+		{
+			FLUSH_EXCESS_INPUT();
+			call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+				FUNC_NAME);
+			display_pause();
+			return false;
+		}
+		printf("%c%c %c%c", cc_old, cr_old, cc_new, cr_new);
+	}else{
+		if(scanf(" %c%c%c%c%c",
+			&cr_old,&cc_old,&space,&cr_new,&cc_new) != 5)
+		{
+			FLUSH_EXCESS_INPUT();
+			call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
+				FUNC_NAME);
+			display_pause();
+			return false;
+		}
 	}
+
 	FLUSH_EXCESS_INPUT();
 
 	if(cr_old >= '1' && cr_old <= '8'){
@@ -409,7 +424,7 @@ uint_fast8_t *r_new, uint_fast8_t *c_new)";
 	}else{
 		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
 			FUNC_NAME);
-		pause();
+		display_pause();
 		return false;
 	}
 
@@ -420,14 +435,14 @@ uint_fast8_t *r_new, uint_fast8_t *c_new)";
 	}else{
 		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
 			FUNC_NAME);
-		pause();
+		display_pause();
 		return false;
 	}
 
-	if(space != ' '){
+	if(!s && space != ' '){
 		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
 			FUNC_NAME);
-		pause();
+		display_pause();
 		return false;
 	}
 
@@ -436,7 +451,7 @@ uint_fast8_t *r_new, uint_fast8_t *c_new)";
 	}else{
 		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
 			FUNC_NAME);
-		pause();
+		display_pause();
 		return false;
 	}
 
@@ -447,8 +462,16 @@ uint_fast8_t *r_new, uint_fast8_t *c_new)";
 	}else{
 		call_error(err_fnc_arr, CAPTURE_MOVE_BAD_INP, FILE_NAME,
 			FUNC_NAME);
-		pause();
+		display_pause();
 		return false;
+	}
+
+	//pgn-extract database boards are flipped
+	if(s){
+		*r_old = 7 - *r_old;
+		*c_old = 7 - *c_old;
+		*r_new = 7 - *r_new;
+		*c_new = 7 - *c_new;
 	}
 
 	errors_terminate_on_def_err = true;

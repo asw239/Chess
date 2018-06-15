@@ -17,7 +17,7 @@ static void fnc_PIECE_MOVE_NOT_IN_RANGE(enum ErrorCode err, const char *msg);
 static void fnc_PIECE_MOVE_COLLISION(enum ErrorCode err, const char *msg);
 static void fnc_PIECE_MOVE_KING_CHECKED(enum ErrorCode err, const char *msg);
 
-void pvp_game_loop(void)
+void pvp_game_loop(FILE *s)
 {
 	Board b = gl_generate_start_board();
 	set_error_callbacks();
@@ -30,7 +30,7 @@ void pvp_game_loop(void)
 		display_print_board(b);
 
 		uint_fast8_t r_old, c_old, r_new, c_new;
-		if(!display_capture_move(&r_old, &c_old, &r_new, &c_new))
+		if(!display_capture_move(s, &r_old, &c_old, &r_new, &c_new))
 			continue;
 
 		Board b_cpy = board_create_copy(b);

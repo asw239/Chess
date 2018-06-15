@@ -1,0 +1,1 @@
+pgn-extract/pgn-extract -Wuci --nomovenumbers --noresults --notags games_pgn/pgn | sed '$d' > games_long/long
