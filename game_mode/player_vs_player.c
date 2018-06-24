@@ -23,11 +23,13 @@ void pvp_game_loop(FILE *s)
 	set_error_callbacks();
 
 	for(;;){
-		if(gl_mate(b, board_get_turn(b)))
-			break;
-
 		display_clear_screen();
 		display_print_board(b);
+
+		if(gl_mate(b, board_get_turn(b))){
+			display_victory();
+			break;
+		}
 
 		uint_fast8_t r_old, c_old, r_new, c_new;
 		if(!display_capture_move(s, &r_old, &c_old, &r_new, &c_new))

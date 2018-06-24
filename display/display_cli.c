@@ -478,6 +478,12 @@ uint_fast8_t *r_new, uint_fast8_t *c_new)";
 	return true;
 }
 
+void display_victory(void)
+{
+	printf("CHECK MATE!\n");
+	display_pause();
+}
+
 ErrFncPtr display_set_err_hndl(enum ErrorCode error_type,
 	ErrFncPtr err_hndl)
 {

@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 		".pgn-extract/pgn-extract ",
 		cmd_sz);
 	strncpy(cmd + strlen(cmd),
-		"-Wuci --nomovenumbers --noresults --notags ",
+		"-Wuci --nomovenumbers --noresults --notags --quiet ",
 		cmd_sz - strlen(cmd));
 	strncpy(cmd + strlen(cmd),
 		argv[1],

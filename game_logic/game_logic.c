@@ -29,8 +29,9 @@ static void null_func(enum ErrorCode err, const char *msg);
 static Piece *generate_active_allies_list(const Board b, enum PieceColor c);
 static bool can_defend_mate(Board b, Piece p, enum PieceColor c);
 static enum CheckReturn check_castle(const Board b, uint_fast8_t r_old,
-	uint_fast8_t c_old, uint_fast8_t c_new);
-static bool check_castle_attempt(uint_fast8_t c_old, uint_fast8_t c_new,
+	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new);
+static bool check_castle_attempt(const Board b, uint_fast8_t r_old,
+	uint_fast8_t c_old, uint_fast8_t c_new, uint_fast8_t r_new,
 	bool *attempting_left_castle, bool *attempting_right_castle);
 static bool check_castle_king_moved(Board b, enum PieceColor king_c);
 static bool check_castle_rook_moved(const Board b, enum PieceColor king_c,
@@ -178,7 +179,7 @@ uint_fast8_t r_new, uint_fast8_t c_new)";
 	if(!gl_validate_move(b, r_old, c_old, r_new, c_new))
 		return false;
 
-	if(SUCCESS == check_castle(b, r_old, c_old, c_new)){
+	if(SUCCESS == check_castle(b, r_old, c_old, r_new, c_new)){
 		castle_move_logic(b, r_old, c_old, r_new, c_new);
 		return true;
 	}
@@ -344,7 +345,8 @@ static bool check_move_king(const Board b, uint_fast8_t r_old,
 "static bool check_move_king(const Board b, uint_fast8_t r_old, \
 uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)";
 
-	enum CheckReturn cr_castle = check_castle(b, r_old, c_old, c_new);
+	enum CheckReturn cr_castle =
+		check_castle(b, r_old, c_old, r_new, c_new);
 	if(cr_castle == FAIL)
 		return false;
 	else if(cr_castle == SUCCESS)
@@ -749,8 +751,15 @@ bool gl_check(const Board b, enum PieceColor c)
 		gl_set_err_hndl(PIECE_MOVE_COLLISION, null_func);
 	ErrFncPtr not_in_range_cback =
 		gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, null_func);
+	ErrFncPtr ally_overlap_cback =
+		gl_set_err_hndl(PIECE_MOVE_OVERLAPS_ALLY, null_func);
+	ErrFncPtr illegal_castle_cback =
+		gl_set_err_hndl(PIECE_MOVE_ILLEGAL_CASTLE, null_func);
+	ErrFncPtr illegal_en_passant_cback =
+		gl_set_err_hndl(BOARD_INVALID_EN_PASSANT_PIECE, null_func);
 
 	bool return_val = false;
+	board_flip_turn(b);
 	for(uint_fast8_t i = 0; i < BOARD_SIZE; ++i){
 		for(uint_fast8_t j = 0; j < BOARD_SIZE; ++j){
 			Piece curr_p = board_get_board_arr(b)[i][j];
@@ -769,9 +778,14 @@ bool gl_check(const Board b, enum PieceColor c)
 		}
 	}
 	LOOPS_EXIT:
+	board_flip_turn(b);
 
 	gl_set_err_hndl(PIECE_MOVE_COLLISION, collision_cback);
 	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, not_in_range_cback);
+	gl_set_err_hndl(PIECE_MOVE_OVERLAPS_ALLY, ally_overlap_cback);
+	gl_set_err_hndl(PIECE_MOVE_ILLEGAL_CASTLE, illegal_castle_cback);
+	gl_set_err_hndl(BOARD_INVALID_EN_PASSANT_PIECE,
+		illegal_en_passant_cback);
 
 	return return_val;
 }
@@ -857,6 +871,10 @@ static bool can_defend_mate(Board b, Piece p, enum PieceColor c)
 		gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, null_func);
 	ErrFncPtr ally_overlap_cback =
 		gl_set_err_hndl(PIECE_MOVE_OVERLAPS_ALLY, null_func);
+	ErrFncPtr illegal_castle_cback =
+		gl_set_err_hndl(PIECE_MOVE_ILLEGAL_CASTLE, null_func);
+	ErrFncPtr illegal_en_passant_cback =
+		gl_set_err_hndl(BOARD_INVALID_EN_PASSANT_PIECE, null_func);
 
 	bool return_val = false;
 	for(uint_fast8_t i = 0; i < BOARD_SIZE; ++i){
@@ -883,20 +901,23 @@ static bool can_defend_mate(Board b, Piece p, enum PieceColor c)
 	gl_set_err_hndl(PIECE_MOVE_COLLISION, collision_cback);
 	gl_set_err_hndl(PIECE_MOVE_NOT_IN_RANGE, not_in_range_cback);
 	gl_set_err_hndl(PIECE_MOVE_OVERLAPS_ALLY, ally_overlap_cback);
+	gl_set_err_hndl(PIECE_MOVE_ILLEGAL_CASTLE, illegal_castle_cback);
+	gl_set_err_hndl(BOARD_INVALID_EN_PASSANT_PIECE,
+		illegal_en_passant_cback);
 
 	return return_val;
 }
 
 static enum CheckReturn check_castle(const Board b, uint_fast8_t r_old,
-	uint_fast8_t c_old, uint_fast8_t c_new)
+	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	enum PieceColor king_c =
 		piece_get_color(board_get_board_arr(b)[r_old][c_old]);
 	bool attempting_left_castle;
 	bool attempting_right_castle;
 
-	if(!check_castle_attempt(c_old, c_new, &attempting_left_castle,
-		&attempting_right_castle))
+	if(!check_castle_attempt(b, r_old, c_old, r_new, c_new,
+		&attempting_left_castle, &attempting_right_castle))
 		return NO_ATTEMPT;
 
 	if(check_castle_king_moved(b, king_c))
@@ -920,16 +941,20 @@ static enum CheckReturn check_castle(const Board b, uint_fast8_t r_old,
 	return SUCCESS;
 }
 
-static bool check_castle_attempt(uint_fast8_t c_old, uint_fast8_t c_new,
+static bool check_castle_attempt(const Board b, uint_fast8_t r_old,
+	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new,
 	bool *attempting_left_castle, bool *attempting_right_castle)
 {
 	*attempting_left_castle = false;
 	*attempting_right_castle = false;
-	if(c_old - 2 == c_new){
+	if(piece_get_type(board_get_board_arr(b)[r_old][c_old]) != KING){
+		return false;
+
+	}else if(c_old - 2 == c_new && r_old == r_new){
 		*attempting_left_castle = true;
 		return true;
 
-	}else if(c_old + 2 == c_new){
+	}else if(c_old + 2 == c_new && r_old == r_new){
 		*attempting_right_castle = true;
 		return true;
 
@@ -1189,6 +1214,8 @@ static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 	uint_fast8_t c_old, uint_fast8_t r_new, uint_fast8_t c_new)
 {
 	if(
+		piece_get_type(board_get_board_arr(b)[r_old][c_old]) == PAWN
+		&&
 		piece_get_color(board_get_board_arr(b)[r_old][c_old]) == WHITE
 		&&
 		r_old - r_new == 1
@@ -1200,6 +1227,8 @@ static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 		return true;
 
 	else if(
+		piece_get_type(board_get_board_arr(b)[r_old][c_old]) == PAWN
+		&&
 		piece_get_color(board_get_board_arr(b)[r_old][c_old]) == BLACK
 		&&
 		r_new - r_old == 1
@@ -1207,10 +1236,10 @@ static bool check_en_passant_attempt(const Board b, uint_fast8_t r_old,
 		(c_old - c_new == 1 || c_new - c_old == 1)
 		&&
 		!board_get_board_arr(b)[r_new][c_new]
-	)
+	){
 		return true;
 
-	else
+	}else
 		return false;
 }
 
@@ -1222,6 +1251,8 @@ static bool check_en_passant_pawn(const Board b, uint_fast8_t r_old,
 uint_fast8_t c_new)";
 
 	if(
+		board_get_en_passant_pawn(b) != NULL
+		&&
 		board_get_board_arr(b)[r_old][c_new]
 		==
 		board_get_en_passant_pawn(b)
@@ -1256,8 +1287,6 @@ ErrFncPtr gl_set_err_hndl(enum ErrorCode error_type, ErrFncPtr err_hndl)
 		error_type != PIECE_MOVE_OVERLAPS_ALLY
 		||
 		error_type != PIECE_MOVE_NOT_IN_RANGE
-		||
-		error_type != BOARD_EMPTY_SQUARE
 		||
 		error_type != PIECE_MOVE_COLLISION
 		||

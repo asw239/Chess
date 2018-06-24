@@ -37,10 +37,13 @@ void board_create_copy_en_passant(void);
 void gl_test_check_en_passant(void);
 void display_test_print_menu(void);
 void test_entry_point(void);
+void debug_error_1(void);
+void debug_error_1_1(void);
+void debug_error_2(void);
 
 int main(int argc, char *argv[])
 {
-	test_entry_point();
+	debug_error_2();
 	return 0;
 }
 
@@ -1457,4 +1460,273 @@ void PVP_game_ONE(void)
 	piece_set_color(p, BLACK);
 	board_link_piece(b, p, 6, 4);
 
+}
+
+void debug_error_1(void)
+{
+	Board b = board_create();
+	board_set_turn(b, WHITE);
+	Piece p;
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 7, 0);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, KING);
+	board_link_piece(b, p, 7, 2);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 7, 7);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 6, 0);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 6, 2);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 6, 6);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 5, 2);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 5, 6);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 4, 5);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, KNIGHT);
+	board_link_piece(b, p, 2, 4);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, KNIGHT);
+	board_link_piece(b, p, 4, 2);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 2, 0);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 2, 5);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 1);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, KING);
+	board_link_piece(b, p, 1, 3);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 7);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 0, 6);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 0, 7);
+
+	display_print_board(b);
+	if(gl_mate(b, board_get_turn(b)))
+		printf("MATE\n");
+	getchar();
+
+	gl_move_piece(b, 2, 4, 3, 2);
+	board_flip_turn(b);
+	display_print_board(b);
+	if(gl_mate(b, board_get_turn(b)))
+		printf("MATE\n");
+	getchar();
+}
+
+void debug_error_1_1(void)
+{
+	Board b = board_create();
+	board_set_turn(b, BLACK);
+
+	Piece p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 1);
+
+	display_print_board(b);
+
+	gl_move_piece(b, 1, 1, 2, 2);
+	display_print_board(b);
+}
+
+void debug_error_2(void)
+{
+	Board b = board_create();
+	board_set_turn(b, BLACK);
+	Piece p;
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 7, 0);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, KING);
+	board_link_piece(b, p, 7, 3);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, QUEEN);
+	board_link_piece(b, p, 7, 4);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 7, 7);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 6, 0);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 6, 1);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 6, 2);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, BISHOP);
+	board_link_piece(b, p, 6, 3);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 6, 7);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, KNIGHT);
+	board_link_piece(b, p, 5, 2);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 5, 3);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, BISHOP);
+	board_link_piece(b, p, 4, 0);
+
+	p = piece_create();
+	piece_set_color(p, WHITE);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 4, 4);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, QUEEN);
+	board_link_piece(b, p, 3, 4);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 2, 1);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, KNIGHT);
+	board_link_piece(b, p, 2, 5);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 0);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, BISHOP);
+	board_link_piece(b, p, 1, 1);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 2);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 3);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 6);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, PAWN);
+	board_link_piece(b, p, 1, 7);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 0, 0);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, KING);
+	board_link_piece(b, p, 0, 3);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, BISHOP);
+	board_link_piece(b, p, 0, 5);
+
+	p = piece_create();
+	piece_set_color(p, BLACK);
+	piece_set_type(p, ROOK);
+	board_link_piece(b, p, 0, 7);
+
+	display_print_board(b);
+	getchar();
+
+	gl_move_piece(b, 0, 3, 0, 1);
+	display_print_board(b);
+	gl_check(b, board_get_turn(b));
 }

@@ -21,6 +21,8 @@ void display_pause(void);
 bool display_capture_move(FILE *s, uint_fast8_t *r_old, uint_fast8_t *c_old,
 	uint_fast8_t *r_new, uint_fast8_t *c_new);
 
+void display_victory(void);
+
 ErrFncPtr display_set_err_hndl(enum ErrorCode error_type,
 	ErrFncPtr err_hndl);
 
